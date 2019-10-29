@@ -1,7 +1,7 @@
 ﻿using Discord.Commands;
 using System.Threading.Tasks;
 
-namespace Discord_Bot_Template
+namespace THUMPSBot
 {
 
     [Group("tests")]
@@ -11,14 +11,14 @@ namespace Discord_Bot_Template
         [Summary("A test command")]
         public async Task Test()
         {
-            await Context.Channel.SendMessageAsync("test");
+            await ReplyAsync("test");
         }
 
         [Command("inputTest")]
         [Summary("tests input by sending a echo")]
-        public async Task InputTest(string input)
+        public async Task InputTest([Remainder]string input)
         {
-            await Context.Channel.SendMessageAsync(input);
+            await ReplyAsync(input);
         }
     }
 }

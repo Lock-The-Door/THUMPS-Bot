@@ -1,12 +1,10 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Discord_Bot_Template
+namespace THUMPSBot
 {
     public class Command_Handler
     {

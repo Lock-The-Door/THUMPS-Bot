@@ -41,6 +41,7 @@ namespace Discord_Bot_Template
         {
             // Don't process the command if it was a system message
             var message = messageParam as SocketUserMessage;
+            Console.WriteLine(message.Content);
             if (message == null) return;
 
             // Create a number to track where the prefix ends and the command begins
@@ -52,6 +53,7 @@ namespace Discord_Bot_Template
                 message.Author.IsBot)
                 return;
 
+            Console.WriteLine(message.Content);
             // Create a WebSocket-based command context based on the message
             var context = new SocketCommandContext(_client, message);
 

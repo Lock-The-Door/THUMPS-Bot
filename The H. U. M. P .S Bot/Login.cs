@@ -16,8 +16,7 @@ namespace Discord_Bot_Template
         {
             _client = new DiscordSocketClient();
             _client.Log += Log;
-            await _client.LoginAsync(TokenType.Bot,
-                Environment.GetEnvironmentVariable("NjAwMTU1NDQwMDc2MTYxMDQ3.XSvowA.ml8wm5HLRSzlYPvU8fE7kPw-CnA"));
+            await _client.LoginAsync(TokenType.Bot, "NjAwMTU1NDQwMDc2MTYxMDQ3.XSvowA.ml8wm5HLRSzlYPvU8fE7kPw-CnA");
             await _client.StartAsync();
 
             // Block this task until the program is closed.

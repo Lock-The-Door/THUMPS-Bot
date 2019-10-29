@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 
 namespace Discord_Bot_Template
 {
+
+    [Group("tests")]
     public class TestModule : ModuleBase<SocketCommandContext>
     {
         [Command("test")]

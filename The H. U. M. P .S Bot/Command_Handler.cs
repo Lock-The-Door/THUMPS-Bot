@@ -2,6 +2,7 @@
 using Discord.WebSocket;
 using System;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace THUMPSBot
@@ -33,6 +34,9 @@ namespace THUMPSBot
             // See Dependency Injection guide for more information.
             await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(),
                                             services: null);
+
+            _client.UserJoined += Client_UserJoined;
+            _client.RoleUpdated += Client_RoleUpdated;
         }
 
         private async Task HandleCommandAsync(SocketMessage messageParam)
@@ -61,6 +65,32 @@ namespace THUMPSBot
                 context: context,
                 argPos: argPos,
                 services: null);
+        }
+
+        private async Task Client_UserJoined(SocketGuildUser arg)
+        {
+            if (arg.Id == 424297184822034444 || arg.Id == 272396560686514176)
+            {
+                await arg.Guild.GetTextChannel(644941983382503484).SendMessageAsync(arg.Username + "is blacklisted from this server.");
+                await arg.Guild.AddBanAsync(arg.Id);
+            }
+            else if (DateTime.Now.Subtract(arg.CreatedAt.Date).TotalDays < 7)
+            {
+                await arg.Guild.GetTextChannel(644941983382503484).SendMessageAsync(arg.Mention + ", your account is quite new. Due to recent events, we will have to verify you. Please dm " + arg.Guild.Owner.Mention);
+            }
+            else
+            {
+                await arg.Guild.GetTextChannel(644941983382503484).SendMessageAsync("Welcome " + arg.Mention + ", we are currently repairing the server due to a security breach.");
+            }
+        }
+
+        private async Task Client_RoleUpdated(SocketRole arg1, SocketRole arg2)
+        {
+            if (arg1.IsEveryone || arg1.Id == 599434578457002004 || arg1.Id == 625095762560155669 || arg1.Id == 599435150534770689 || arg1.Id == 599435150534770689 || arg1.Id == 599429098770792470 || arg1.Id == 597929341308895252)
+            {
+                await arg1.Guild.GetTextChannel(644941989883674645).SendMessageAsync("An important role has been updated");
+            }
+            
         }
     }
 }

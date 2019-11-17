@@ -1,6 +1,7 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace THUMPSBot
         {
             _commands = commands;
             _client = client;
+
         }
 
         public async Task InstallCommandsAsync()
@@ -36,7 +38,6 @@ namespace THUMPSBot
                                             services: null);
 
             _client.UserJoined += Client_UserJoined;
-            _client.RoleUpdated += Client_RoleUpdated;
         }
 
         private async Task HandleCommandAsync(SocketMessage messageParam)
@@ -49,11 +50,21 @@ namespace THUMPSBot
             // Create a number to track where the prefix ends and the command begins
             int argPos = 0;
 
+            //detect for banned words
+            if (WordFilter(message.Content, out string reason))
+            {
+                string link = "https://discordapp.com/channels/597798914606759959/" + message.Channel.Id + "/" + message.Id;
+                await message.Channel.SendMessageAsync("!warn " + message.Author.Mention + " " + link + " " + reason);
+                return;
+            }
+
             // Determine if the message is a command based on the prefix and make sure no bots trigger commands
             if (!(message.HasCharPrefix('!', ref argPos) ||
                 message.HasMentionPrefix(_client.CurrentUser, ref argPos)) ||
                 message.Author.IsBot)
+            {
                 return;
+            }
 
             Console.WriteLine(message.Content);
             // Create a WebSocket-based command context based on the message
@@ -69,12 +80,12 @@ namespace THUMPSBot
 
         private async Task Client_UserJoined(SocketGuildUser arg)
         {
-            if (arg.Id == 424297184822034444 || arg.Id == 272396560686514176 || arg.Id == 645401167542747136)
+            if (arg.Id == 424297184822034444 || arg.Id == 272396560686514176 || arg.Id == 645401167542747136 || arg.Id == 601067664126902275)
             {
                 await arg.Guild.GetTextChannel(644941983382503484).SendMessageAsync(arg.Username + "is blacklisted from this server.");
                 await arg.Guild.AddBanAsync(arg.Id);
             }
-            else if (DateTime.Now.Subtract(arg.CreatedAt.Date).TotalDays < 7)
+            else if (DateTime.Now.Subtract(arg.CreatedAt.Date).TotalDays < 10)
             {
                 await arg.Guild.GetTextChannel(644941983382503484).SendMessageAsync(arg.Mention + ", your account is quite new. Due to recent events, we will have to verify you. Please dm " + arg.Guild.Owner.Mention);
                 await arg.RemoveRoleAsync(arg.Guild.GetRole(597929341308895252));
@@ -86,13 +97,31 @@ namespace THUMPSBot
             }
         }
 
-        private async Task Client_RoleUpdated(SocketRole arg1, SocketRole arg2)
+        private bool WordFilter(string message, out string reason)
         {
-            if (arg1.IsEveryone || arg1.Id == 599434578457002004 || arg1.Id == 625095762560155669 || arg1.Id == 599435150534770689 || arg1.Id == 599435150534770689 || arg1.Id == 599429098770792470 || arg1.Id == 597929341308895252)
+            //get rid of special characters and spaces
+            string combinedMessage = "";
+            foreach (char c in message.ToLower().ToCharArray())
             {
-                await arg1.Guild.GetTextChannel(644941989883674645).SendMessageAsync("An important role has been updated");
+                if (c != '!' && c != '.' && c != ' ' && c != ',' && c != '/' && c != '?' && c != '_')
+                {
+                    combinedMessage += c;
+                }
             }
-            
+
+            //test for bad words
+            if (combinedMessage.Contains("nigger"))
+            {
+                reason = "n-word";
+                return true;
+            }
+            else if (combinedMessage.Contains("niga"))
+            {
+                reason = "n-word slang";
+                return true;
+            }
+            reason = "";
+            return false;
         }
     }
 }

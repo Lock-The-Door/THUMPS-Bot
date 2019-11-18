@@ -3,8 +3,9 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <RootNamespace>The_H._U._M._P_.S_Bot</RootNamespace>
+    <RootNamespace>THUMPSBot</RootNamespace>
     <StartupObject>THUMPSBot.Program</StartupObject>
+    <AssemblyName>THUMPS Bot</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,6 +28,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="infractions.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Saved.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -31,4 +31,17 @@ namespace THUMPSBot
             await ReplyAsync(save.Load().Result);
         }
     }
+
+    [Group("indev")]
+    public class InDevModule : ModuleBase<SocketCommandContext>
+    {
+        Mod_Actions actions = new Mod_Actions();
+        [Command("infractions")]
+        
+        [Summary("Finds infractions")]
+        public async Task Infractions([Remainder] Discord.IUser user)
+        {
+            string infractions = await actions.FindInfractions();
+        }
+    }
 }

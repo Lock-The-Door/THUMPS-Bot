@@ -50,11 +50,17 @@ namespace THUMPSBot
             // Create a number to track where the prefix ends and the command begins
             int argPos = 0;
 
+            //load mod commands for bot use
+            Mod_Actions actions = new Mod_Actions();
             //detect for banned words
-            if (WordFilter(message.Content, out string reason))
+            if (AutoMod.WordFilter(message.Content, out string reason))
             {
                 string link = "https://discordapp.com/channels/597798914606759959/" + message.Channel.Id + "/" + message.Id;
-                await message.Channel.SendMessageAsync("!warn " + message.Author.Mention + " " + link + " " + reason);
+                await message.Channel.SendMessageAsync(":exclamation: :eyes: :exclamation: " + message.Author.Mention + " " + link + " " + reason + " This will be logged and may be used against you.");
+                string infractionMessage = "THUMPS Bot warned " + message.Author.Username + " with the id of " + message.Author.Id + " for " + reason + " in " + message.Channel.Name;
+                await actions.LogInfraction(infractionMessage);
+                var channel = _client.GetChannel(644941989883674645) as ISocketMessageChannel;
+                await channel.SendMessageAsync(infractionMessage);
                 return;
             }
 
@@ -95,33 +101,6 @@ namespace THUMPSBot
             {
                 await arg.Guild.GetTextChannel(644941983382503484).SendMessageAsync("Welcome " + arg.Mention + ", we are currently repairing the server due to a security breach.");
             }
-        }
-
-        private bool WordFilter(string message, out string reason)
-        {
-            //get rid of special characters and spaces
-            string combinedMessage = "";
-            foreach (char c in message.ToLower().ToCharArray())
-            {
-                if (c != '!' && c != '.' && c != ' ' && c != ',' && c != '/' && c != '?' && c != '_')
-                {
-                    combinedMessage += c;
-                }
-            }
-
-            //test for bad words
-            if (combinedMessage.Contains("nigger"))
-            {
-                reason = "n-word";
-                return true;
-            }
-            else if (combinedMessage.Contains("niga"))
-            {
-                reason = "n-word slang";
-                return true;
-            }
-            reason = "";
-            return false;
         }
     }
 }

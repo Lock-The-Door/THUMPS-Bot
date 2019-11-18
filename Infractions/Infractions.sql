@@ -1,0 +1,8 @@
+﻿CREATE TABLE [dbo].Infractions
+(
+	[Id] INT NOT NULL PRIMARY KEY IDENTITY, 
+	[Infringer Id] BIGINT NOT NULL ,
+	[Mod Id] BIGINT NOT NULL ,
+	[Reason] NVARCHAR(2000) NOT NULL,
+    [Time] TIMESTAMP NOT NULL
+)

@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "T. H. U. M. P .S Bot", "The H. U. M. P .S Bot\T. H. U. M. P .S Bot.csproj", "{2B3F78EE-1730-490B-B641-214B774D958F}"
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Infractions", "Infractions\Infractions.sqlproj", "{AB3B85F1-CBCF-4692-86BD-2A9B2DD022D9}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -1,10 +1,12 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using System.Threading.Tasks;
 
 namespace THUMPSBot
 {
 
     [Group("tests")]
+    [RequireOwner(ErrorMessage = "This is a test command and is not designed for the general public", Group = "tests")]
     public class TestModule : ModuleBase<SocketCommandContext>
     {
         SaveTest save = new SaveTest();
@@ -33,15 +35,16 @@ namespace THUMPSBot
     }
 
     [Group("indev")]
+    [RequireOwner(ErrorMessage = "This command are not ready yet")]
     public class InDevModule : ModuleBase<SocketCommandContext>
     {
         Mod_Actions actions = new Mod_Actions();
         [Command("infractions")]
-        
         [Summary("Finds infractions")]
-        public async Task Infractions([Remainder] Discord.IUser user)
+        public async Task Infractions(IUser user)
         {
-            string infractions = await actions.FindInfractions();
+            string infractions = await actions.FindInfractions(user, Context.Client);
+            await ReplyAsync(infractions);
         }
     }
 }

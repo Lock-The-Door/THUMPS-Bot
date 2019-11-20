@@ -2,6 +2,7 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace THUMPSBot
@@ -12,7 +13,9 @@ namespace THUMPSBot
         private CommandService _commands;
 
         public static void Main(string[] args)
-            => new Program().MainAsync().GetAwaiter().GetResult();
+        {
+            new Program().MainAsync().GetAwaiter().GetResult();
+        }
 
         public async Task MainAsync()
         {
@@ -31,8 +34,9 @@ namespace THUMPSBot
             await _client.LoginAsync(TokenType.Bot, "NjAwMTU1NDQwMDc2MTYxMDQ3.XSvowA.ml8wm5HLRSzlYPvU8fE7kPw-CnA");
             await _client.StartAsync();
 
-            // Block this task until the program is closed.
+            // Block this task.
             await Task.Delay(-1);
+            Thread.CurrentThread.IsBackground = false;
         }
         private Task Log(LogMessage msg)
         {

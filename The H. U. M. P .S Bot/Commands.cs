@@ -7,23 +7,21 @@ using System.Threading.Tasks;
 namespace THUMPSBot
 {
 
-    [Group("tests")]
+    [Group("Tests")]
+    [RequireOwner(ErrorMessage = "This is a test command and is not intended for public use.", Group = "Permmision")]
     public class TestModule : ModuleBase<SocketCommandContext>
     {
         SaveTest save = new SaveTest();
 
         [Command("test")]
-        [RequireOwner(ErrorMessage = "This is a test command and is not intended for public use.", Group = "Permmision")]
         [Summary("A test command")]
         public async Task Test() => await ReplyAsync("test");
 
         [Command("inputTest")]
-        [RequireOwner(ErrorMessage = "This is a test command and is not intended for public use.", Group = "Permmision")]
         [Summary("Tests input by sending a echo")]
         public async Task InputTest([Remainder]string input) => await ReplyAsync(input);
 
         [Command("save")]
-        [RequireOwner(ErrorMessage = "This is a test command and is not intended for public use.", Group = "Permmision")]
         [Summary("Test saving mechanics")]
         public async Task SaveTest([Remainder] string input)
         {
@@ -31,7 +29,6 @@ namespace THUMPSBot
             await ReplyAsync("Saved: \"" + input + "\" to text file. Do !load to view all saved items");
         }
         [Command("load")]
-        [RequireOwner(ErrorMessage = "This is a test command and is not intended for public use.", Group = "Permmision")]
         [Summary("Test loading mechanics")]
         public async Task LoadTest()
         {
@@ -39,13 +36,13 @@ namespace THUMPSBot
         }
     }
 
-    [Group("indev")]
+    [Group("Indev")]
+    [RequireOwner(ErrorMessage = "This command is in development. You cannot use it right now.", Group = "Permmision")]
     public class InDevModule : ModuleBase<SocketCommandContext>
     {
         Mod_Actions actions = new Mod_Actions();
 
         [Command("infractions")]
-        [RequireOwner(ErrorMessage = "This command is in development. You cannot use it right now.", Group = "Permmision")]
         [Summary("Finds infractions")]
         public async Task Infractions([Remainder] IUser user)
         {
@@ -61,7 +58,23 @@ namespace THUMPSBot
             CommandService commandService = new CommandService();
             await commandService.AddModulesAsync(assembly: Assembly.GetEntryAssembly(),
                                             services: null);
-            foreach (CommandInfo command in commandService.Commands)
+
+            await ReplyAsync("Here are all my commands that you can use!");
+
+            foreach (ModuleInfo module in commandService.Modules)
+            {
+                embedBuilder.Title = module.Name;
+                foreach (CommandInfo command in module.Commands)
+                {
+                    // Get the command Summary attribute information
+                    string embedFieldText = command.Summary ?? "No description available\n";
+
+                    embedBuilder.AddField("!" + command.Name, embedFieldText);
+                }
+                await ReplyAsync(embed: embedBuilder.Build());
+            }
+
+            /*foreach (CommandInfo command in commandService.Commands)
             {
                 bool usable = true;
 
@@ -72,9 +85,9 @@ namespace THUMPSBot
 
                     embedBuilder.AddField("!" + command.Name, embedFieldText);
                 }
-            }
+            }*/
 
-            await ReplyAsync("Here's a list of commands and their description: ", false, embedBuilder.Build());
+            //await ReplyAsync("Here's a list of commands and their description: ", false, embedBuilder.Build());
         }
     }
 }

@@ -38,6 +38,7 @@ namespace THUMPSBot
                                             services: null);
 
             _client.UserJoined += Client_UserJoined;
+            _client.UserLeft += Client_UserLeft;
         }
 
         private async Task HandleCommandAsync(SocketMessage messageParam)
@@ -101,6 +102,11 @@ namespace THUMPSBot
                 await arg.AddRoleAsync(arg.Guild.GetRole(597929341308895252));
                 await arg.Guild.GetTextChannel(644941983382503484).SendMessageAsync("Welcome " + arg.Mention + ", we are currently repairing the server due to a security breach.");
             }
+        }
+
+        private async Task Client_UserLeft(SocketGuildUser arg)
+        {
+            await arg.Guild.GetTextChannel(644941983382503484).SendMessageAsync(string.Format("**{0}** just left the server. Good for them...", arg.Username));
         }
     }
 }

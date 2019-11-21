@@ -1,4 +1,5 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
@@ -100,7 +101,8 @@ namespace THUMPSBot
             else //welcome message
             {
                 await arg.AddRoleAsync(arg.Guild.GetRole(597929341308895252));
-                await arg.Guild.GetTextChannel(644941983382503484).SendMessageAsync("Welcome " + arg.Mention + ", we are currently repairing the server due to a security breach.");
+                await arg.Guild.GetTextChannel(644941983382503484).SendMessageAsync(string.Format("Welcome {0}, we are currently repairing the server due to a security breach.", arg.Username));
+                await arg.SendMessageAsync(string.Format("Hi person named **{0}**, you just joined **{1}** owned by **{2}** so I decided to spam you. I hope you appreciate it! {3} \n\nStatistics of {1}:\nAmount of other people like you: **{4}**", arg.Username, arg.Guild.Name, arg.Guild.Owner, arg.Guild.IconUrl, arg.Guild.MemberCount));
             }
         }
 

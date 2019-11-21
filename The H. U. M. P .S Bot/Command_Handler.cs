@@ -86,19 +86,19 @@ namespace THUMPSBot
 
         private async Task Client_UserJoined(SocketGuildUser arg)
         {
-            if (arg.Id == 424297184822034444 || arg.Id == 272396560686514176 || arg.Id == 645401167542747136 || arg.Id == 601067664126902275)
+            if (arg.Id == 424297184822034444 || arg.Id == 272396560686514176 || arg.Id == 645401167542747136 || arg.Id == 601067664126902275) //rebanner
             {
                 await arg.Guild.GetTextChannel(644941983382503484).SendMessageAsync(arg.Username + "is blacklisted from this server.");
                 await arg.Guild.AddBanAsync(arg.Id);
             }
-            else if (DateTime.Now.Subtract(arg.CreatedAt.Date).TotalDays < 10)
+            else if (DateTime.Now.Subtract(arg.CreatedAt.Date).TotalDays < 11 || (arg.GetDefaultAvatarUrl() == arg.GetAvatarUrl() && arg.CreatedAt.Date < new DateTime(2019, 11, 1))) //quarentine for new accounts. If the icon is default but created after november 2019 it will also be quarentined
             {
                 await arg.Guild.GetTextChannel(644941983382503484).SendMessageAsync(arg.Mention + ", your account is quite new. Due to recent events, we will have to verify you. Please dm " + arg.Guild.Owner.Mention);
-                await arg.RemoveRoleAsync(arg.Guild.GetRole(597929341308895252));
                 await arg.AddRoleAsync(arg.Guild.GetRole(645413078405611540));
             }
-            else
+            else //welcome message
             {
+                await arg.AddRoleAsync(arg.Guild.GetRole(597929341308895252));
                 await arg.Guild.GetTextChannel(644941983382503484).SendMessageAsync("Welcome " + arg.Mention + ", we are currently repairing the server due to a security breach.");
             }
         }

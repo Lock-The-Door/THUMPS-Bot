@@ -1,4 +1,7 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
+using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace THUMPSBot
@@ -44,9 +47,34 @@ namespace THUMPSBot
         [Command("infractions")]
         [RequireOwner(ErrorMessage = "This command is in development. You cannot use it right now.", Group = "Permmision")]
         [Summary("Finds infractions")]
-        public async Task Infractions([Remainder] Discord.IUser user)
+        public async Task Infractions([Remainder] IUser user)
         {
             string infractions = await actions.FindInfractions();
+        }
+
+        [Command("help")]
+        [Summary("A command to find all avalible commands to the user")]
+        public async Task Help()
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+
+            CommandService commandService = new CommandService();
+            await commandService.AddModulesAsync(assembly: Assembly.GetEntryAssembly(),
+                                            services: null);
+            foreach (CommandInfo command in commandService.Commands)
+            {
+                bool usable = true;
+
+                if (usable)
+                {
+                    // Get the command Summary attribute information
+                    string embedFieldText = command.Summary ?? "No description available\n";
+
+                    embedBuilder.AddField("!" + command.Name, embedFieldText);
+                }
+            }
+
+            await ReplyAsync("Here's a list of commands and their description: ", false, embedBuilder.Build());
         }
     }
 }

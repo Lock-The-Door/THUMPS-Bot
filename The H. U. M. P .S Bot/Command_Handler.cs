@@ -12,12 +12,12 @@ namespace THUMPSBot
     public class Command_Handler
     {
         private readonly DiscordSocketClient _client;
-        private readonly CommandService _commands;
+        public readonly CommandService _commands;
 
         // Retrieve client and CommandService instance via ctor
         public Command_Handler(DiscordSocketClient client, CommandService commands)
         {
-            _commands = commands;
+            this._commands = commands;
             _client = client;
 
         }

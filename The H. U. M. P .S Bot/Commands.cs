@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using System.Collections.Generic;
 using System.Reflection;
@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace THUMPSBot
 {
-
     [Group("Tests")]
     [RequireOwner(ErrorMessage = "This is a test command and is not intended for public use.", Group = "Permmision")]
     public class TestModule : ModuleBase<SocketCommandContext>
@@ -36,17 +35,18 @@ namespace THUMPSBot
         }
     }
 
-    [Group("Indev")]
-    [RequireOwner(ErrorMessage = "This command is in development. You cannot use it right now.", Group = "Permmision")]
+    [Group("indev")]
+    [RequireOwner(ErrorMessage = "This command are not ready yet")]
     public class InDevModule : ModuleBase<SocketCommandContext>
     {
         Mod_Actions actions = new Mod_Actions();
 
         [Command("infractions")]
         [Summary("Finds infractions")]
-        public async Task Infractions([Remainder] IUser user)
+        public async Task Infractions(IGuildUser user)
         {
-            string infractions = await actions.FindInfractions();
+            Embed infractions = await actions.FindInfractions(user, Context.Client);
+            await ReplyAsync(embed: infractions);
         }
 
         [Command("help")]
@@ -73,21 +73,6 @@ namespace THUMPSBot
                 }
                 await ReplyAsync(embed: embedBuilder.Build());
             }
-
-            /*foreach (CommandInfo command in commandService.Commands)
-            {
-                bool usable = true;
-
-                if (usable)
-                {
-                    // Get the command Summary attribute information
-                    string embedFieldText = command.Summary ?? "No description available\n";
-
-                    embedBuilder.AddField("!" + command.Name, embedFieldText);
-                }
-            }*/
-
-            //await ReplyAsync("Here's a list of commands and their description: ", false, embedBuilder.Build());
         }
     }
 }

@@ -64,18 +64,24 @@ namespace THUMPSBot
                                             services: null);
 
             await ReplyAsync("Here are all my commands that you can use!");
+            
+            List<string> uselessModules = new List<string>(commandServices.Modules.Count);//list for unusable commands
+            uselessModules.AddRange("TestModule", "InDevModule");
 
             foreach (ModuleInfo module in commandService.Modules)
             {
-                embedBuilder.Title = module.Name;
-                foreach (CommandInfo command in module.Commands)
+                if (uselessModules.Contains(module.Name))
                 {
-                    // Get the command Summary attribute information
-                    string embedFieldText = command.Summary ?? "No description available\n";
+                    embedBuilder.Title = module.Name;
+                    foreach (CommandInfo command in module.Commands)
+                    {
+                        // Get the command Summary attribute information
+                        string embedFieldText = command.Summary ?? "No description available\n";
 
-                    embedBuilder.AddField("!" + command.Name, embedFieldText);
+                        embedBuilder.AddField("!" + command.Name, embedFieldText);
+                    }
+                    await ReplyAsync(embed: embedBuilder.Build());
                 }
-                await ReplyAsync(embed: embedBuilder.Build());
             }
         }
     }

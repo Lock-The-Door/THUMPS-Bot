@@ -31,7 +31,7 @@ namespace THUMPSBot
             Command_Handler command_Handler = new Command_Handler(_client, _commands);
             await command_Handler.InstallCommandsAsync();
 
-            await _client.LoginAsync(TokenType.Bot, "NjAwMTU1NDQwMDc2MTYxMDQ3.XSvowA.ml8wm5HLRSzlYPvU8fE7kPw-CnA");
+            await _client.LoginAsync(TokenType.Bot, Environment.GetEnvironmentVariable("THUMPS_API_Token", EnvironmentVariableTarget.User));
             await _client.StartAsync();
 
             // Block this task.

@@ -10,6 +10,7 @@ namespace THUMPSBot
 {
     public static class AutoMod
     {
+        
         public static bool WordFilter(string message, out string reason)
         {
             //get rid of special characters and spaces
@@ -19,6 +20,11 @@ namespace THUMPSBot
                 char nc = c;
                 if (nc != '!' && nc != '.' && nc != ' ' && nc != ',' && nc != '/' && nc != '?' && nc != '_')
                 {
+                    /*if (c == '3' : 'ἕ' : 'è' : 'é' : 'ę' : 'ê')
+                        nc = 'e';
+                    else if (c == '9')
+                        nc = 'g';
+                    else if (c == '1' : '!' : '|' : 'î' : 'ï')*/
                     switch (c)
                     {
                         case '3':
@@ -26,6 +32,7 @@ namespace THUMPSBot
                         case 'è':
                         case 'é':
                         case 'ę':
+                        case 'ê':
                             nc = 'e';
                             break;
                         case '9':

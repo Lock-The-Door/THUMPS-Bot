@@ -128,7 +128,7 @@ namespace THUMPSBot
                                     infractionMessage += "\nDate and Time: " + item.ToString();
                                     break;
                                 case 5:
-                                    infractionMessage += "\nReason" + item.ToString();
+                                    infractionMessage += "\nReason: " + item.ToString();
                                     break;
                             }
 

@@ -48,7 +48,11 @@ namespace THUMPSBot
             Embed infractions = await actions.FindInfractions(user, Context.Client);
             await ReplyAsync(embed: infractions);
         }
-
+    }
+    
+    //Finished Commands
+    public class Miscellaneous : ModuleBase<SocketCommandContext>
+    {
         [Command("help")]
         [Summary("A command to find all avalible commands to the user")]
         public async Task Help()

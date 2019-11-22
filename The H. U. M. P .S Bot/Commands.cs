@@ -43,8 +43,8 @@ namespace THUMPSBot
         [Summary("Finds infractions")]
         public async Task Infractions(IGuildUser user)
         {
-            string infractions = await actions.FindInfractions(user, Context.Client);
-            await ReplyAsync(infractions);
+            Embed infractions = await actions.FindInfractions(user, Context.Client);
+            await ReplyAsync(embed: infractions);
         }
     }
 }

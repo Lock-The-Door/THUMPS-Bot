@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data.SqlClient;
-using System.Configuration;
-using System.Data;
-using Discord;
+﻿using Discord;
 using Discord.WebSocket;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace THUMPSBot
 {
@@ -65,7 +61,7 @@ namespace THUMPSBot
 
     public class Mod_Actions
     {
-        public async Task<string> FindInfractions(IUser infringer, DiscordSocketClient client)
+        public async Task<Embed> FindInfractions(IGuildUser infringer, DiscordSocketClient client)
         {
             /*string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"infractions.txt");
             StreamReader reader = new StreamReader(path);
@@ -86,61 +82,80 @@ namespace THUMPSBot
                 adapter.Fill(infractions);
 
                 //create a list for infractions that deal with 
-                List<DataRow> userInfractions = new List<DataRow>();
+                List<DataRow> userInfractions = new List<DataRow>
+                {
+                    //go size to minimum size required
+                    Capacity = infractions.Rows.Count
+                };
 
-                //create the message that we will print
-                string infractionMessage = "`";
-
-                //go through each data row collection
-                //foreach (DataRowCollection infractionRow in infractions.Rows)
-                //{
-                    //go through each infraction
-                    foreach(DataRow infraction in infractions.Rows)
+                //go through each infraction
+                foreach (DataRow infraction in infractions.Rows)
+                {
+                    //find the right value and see if it's the right person. If so move it to the list
+                    string found = infraction[infractions.Columns[1]].ToString(); ;
+                    if (ulong.TryParse(found, out ulong foundId))
                     {
-                        //find the right value and see if it's the right person. If so move it to the list
-                        string found = infraction[infractions.Columns[1]].ToString(); ;
-                        if (ulong.TryParse(found, out ulong foundId))
+                        if (foundId == infringer.Id)
                         {
-                            if (foundId == infringer.Id)
-                            {
-                                userInfractions.Add(infraction);
-                            }
+                            userInfractions.Add(infraction);
                         }
                     }
+                }
 
-                    //go through each matching infraction
-                    foreach (DataRow infraction in userInfractions)
+                //create new embeded message that will be used to display the history
+                EmbedAuthorBuilder authorBuilder = new EmbedAuthorBuilder
+                {
+                    IconUrl = infringer.GetAvatarUrl(),
+                    Name =  infringer.Username + "'s infraction history"
+                };
+                EmbedBuilder infractionsEmbed = new EmbedBuilder
+                {
+                    Author = authorBuilder
+                };
+                // return if no infractions
+                if (userInfractions.Count == 0)
+                {
+                    return new EmbedBuilder
                     {
-                        int itemNumber = 0;
-                        foreach (var item in infraction.ItemArray)
+                        Author = new EmbedAuthorBuilder
                         {
-                            switch(itemNumber)
-                            {
-                                case 2:
-                                    IUser infringingUser = client.GetUser(ulong.Parse(item.ToString()));
-                                    infractionMessage += "Moderator: " + infringingUser.Username;
-                                    break;
-                                case 3:
-                                    IChannel channel = client.GetChannel(ulong.Parse(item.ToString()));
-                                    infractionMessage += "\nChannel: #" + channel.Name;
-                                    break;
-                                case 4:
-                                    infractionMessage += "\nDate and Time: " + item.ToString();
-                                    break;
-                                case 5:
-                                    infractionMessage += "\nReason: " + item.ToString();
-                                    break;
-                            }
-
-                            itemNumber++;
+                            IconUrl = infringer.GetAvatarUrl(),
+                            Name = infringer.Username + " has no infractions!"
                         }
-                        //add new line between infractions
-                        infractionMessage += "\n";
-                    }
-                //}
-                //return result
-                return infractionMessage + "`";
-                //the message is surrounded by "`" because it won't actually ping anyone (this is the replace embedding because I don't have a website)
+                    }.Build();
+                }
+
+                //take the 10 latest infractions
+                userInfractions.Capacity = 10;
+                userInfractions.TrimExcess();
+
+                string infractionString = "";//infractions
+                //go through each matching infraction
+                foreach (DataRow infraction in userInfractions)
+                {
+                    //get the info stored
+
+                    //get mod who gave warn
+                    IUser mod = client.GetUser(ulong.Parse(infraction.ItemArray[2].ToString()));
+                    infractionString += "Moderator: " + mod.Username;
+
+                    //channel user was warned in
+                    IChannel channel = client.GetChannel(ulong.Parse(infraction.ItemArray[3].ToString()));
+                    infractionString += "\nChannel: #" + channel.Name;
+
+                    //date and time user was warned
+                    infractionString += "\nDate and Time: " + infraction.ItemArray[4].ToString();
+
+                    //reason for warn
+                    infractionString += "\nReason: " + infraction.ItemArray[5].ToString();
+
+                    //add lines between different infractions for readablitiy
+                    infractionString += "\n\n";
+                }
+
+                infractionsEmbed.AddField("Last 10 infractions", infractionString);
+
+                return infractionsEmbed.Build();
             }
         }
 

@@ -132,11 +132,33 @@ namespace THUMPSBot
                     }.Build();
                 }
 
-                //take the 10 latest infractions
-                userInfractions.Capacity = 10;
-                userInfractions.TrimExcess();
+                //get average infraction rate (days, weeks)
+                double joinedDays = Math.Floor(DateTime.Now.Subtract(infringer.JoinedAt.Value.DateTime).TotalDays);
+                int totalinfractions = userInfractions.Count;
 
-                string infractionString = "";//infractions
+                //average days
+                double averageDay = totalinfractions / joinedDays;
+
+                //average week
+                double averageWeek = totalinfractions / Math.Floor(joinedDays / 7);
+
+                //round
+                averageDay = Math.Round(averageDay, 2);
+                averageWeek = Math.Round(averageWeek, 2);
+
+                //add to embed
+                infractionsEmbed.AddField("Daily Avg.", averageDay + " infractions/day", true);
+                infractionsEmbed.AddField("Weekly Avg.", averageWeek + " infractions/week", true);
+                //add total infraction number
+                infractionsEmbed.AddField("Total Infractions", totalinfractions + " infractions", true);
+
+                //take the 10 latest infractions
+                while (userInfractions.Count > 5)
+                {
+                    userInfractions.RemoveAt(userInfractions.Count - 1);
+                }
+
+                string infractionString = ""; //infractions
                 //go through each matching infraction
                 foreach (DataRow infraction in userInfractions)
                 {
@@ -144,23 +166,25 @@ namespace THUMPSBot
 
                     //get mod who gave warn
                     IUser mod = client.GetUser(ulong.Parse(infraction.ItemArray[2].ToString()));
-                    infractionString += "Moderator: " + mod.Username;
+                    infractionString += "**Moderator:** " + mod.Username;
 
                     //channel user was warned in
                     IChannel channel = client.GetChannel(ulong.Parse(infraction.ItemArray[3].ToString()));
-                    infractionString += "\nChannel: #" + channel.Name;
+                    infractionString += "\n**Channel:** #" + channel.Name;
 
                     //date and time user was warned
-                    infractionString += "\nDate and Time: " + infraction.ItemArray[4].ToString();
+                    infractionString += "\n**Date and Time:** " + infraction.ItemArray[4].ToString();
 
                     //reason for warn
-                    infractionString += "\nReason: " + infraction.ItemArray[5].ToString();
+                    infractionString += "\n**Reason:** " + infraction.ItemArray[5].ToString();
+                    if (infraction.ItemArray[5].ToString().Length > 30)
+                    { infractionString.Remove(30); infractionString += "..."; }
 
                     //add lines between different infractions for readablitiy
                     infractionString += "\n\n";
                 }
 
-                infractionsEmbed.AddField("Last 10 infractions", infractionString);
+                infractionsEmbed.AddField("Last 5 infractions", infractionString);
 
                 return infractionsEmbed.Build();
             }

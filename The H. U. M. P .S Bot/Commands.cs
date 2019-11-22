@@ -41,7 +41,7 @@ namespace THUMPSBot
         Mod_Actions actions = new Mod_Actions();
         [Command("infractions")]
         [Summary("Finds infractions")]
-        public async Task Infractions(IUser user)
+        public async Task Infractions(IGuildUser user)
         {
             string infractions = await actions.FindInfractions(user, Context.Client);
             await ReplyAsync(infractions);

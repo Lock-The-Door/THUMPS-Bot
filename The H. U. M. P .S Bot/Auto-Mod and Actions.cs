@@ -74,7 +74,7 @@ namespace THUMPSBot
             return output;*/
 
             //access the database
-            string connectionString = ConfigurationManager.ConnectionStrings[0].ConnectionString;
+            string connectionString = @"Data Source=(localdb)\ProjectsV13;Initial Catalog=Infractions;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             using (SqlDataAdapter adapter = new SqlDataAdapter("SELECT * FROM Infractions", connectionString))
@@ -92,10 +92,10 @@ namespace THUMPSBot
                 string infractionMessage = "`";
 
                 //go through each data row collection
-                foreach (DataRowCollection infractionRow in infractions.Rows)
-                {
+                //foreach (DataRowCollection infractionRow in infractions.Rows)
+                //{
                     //go through each infraction
-                    foreach(DataRow infraction in infractionRow)
+                    foreach(DataRow infraction in infractions.Rows)
                     {
                         //find the right value and see if it's the right person. If so move it to the list
                         string found = infraction[infractions.Columns[1]].ToString(); ;
@@ -118,24 +118,26 @@ namespace THUMPSBot
                             {
                                 case 2:
                                     IUser infringingUser = client.GetUser(ulong.Parse(item.ToString()));
-                                    infractionMessage += "Moderator: " + infringingUser.Mention;
+                                    infractionMessage += "Moderator: " + infringingUser.Username;
                                     break;
                                 case 3:
                                     IChannel channel = client.GetChannel(ulong.Parse(item.ToString()));
-                                    infractionMessage += " Channel: #" + channel.Name;
+                                    infractionMessage += "\nChannel: #" + channel.Name;
                                     break;
                                 case 4:
-                                    infractionMessage += "Date and Time: " + item.ToString();
+                                    infractionMessage += "\nDate and Time: " + item.ToString();
                                     break;
                                 case 5:
-                                    infractionMessage += "Reason" + item.ToString();
+                                    infractionMessage += "\nReason" + item.ToString();
                                     break;
                             }
+
+                            itemNumber++;
                         }
                         //add new line between infractions
                         infractionMessage += "\n";
                     }
-                }
+                //}
                 //return result
                 return infractionMessage + "`";
                 //the message is surrounded by "`" because it won't actually ping anyone (this is the replace embedding because I don't have a website)

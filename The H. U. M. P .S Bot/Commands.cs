@@ -65,8 +65,9 @@ namespace THUMPSBot
 
             await ReplyAsync("Here are all my commands that you can use!");
             
-            List<string> uselessModules = new List<string>(commandService.Modules.Count);//list for unusable commands
-            uselessModules.AddRange({"TestModule", "InDevModule"});
+            List<string> uselessModules = new List<string>();//list for unusable commands
+            uselessModules.Add("TestModule");
+            uselessModules.Add("InDevModule");
 
             foreach (ModuleInfo module in commandService.Modules)
             {

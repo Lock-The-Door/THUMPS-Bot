@@ -184,20 +184,38 @@ namespace THUMPSBot
             }
         }
 
-        public async Task LogInfraction(string reason)
+        public async Task LogInfraction(IUser infringingUser, IUser modUser, IChannel channel, string reason)
         {
+            //access the database
+            string connectionString = @"Data Source=(localdb)\ProjectsV13;Initial Catalog=Infractions;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+
+            string query = "INSERT INTO Infractions VALUES (@Infringer, @Moderator, @Channel, @Time, @Reason)";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand(query, connection))
+            {
+                await connection.OpenAsync();
+
+                //set varibles
+                command.Parameters.AddWithValue("@Infringer", infringingUser.Id);
+                command.Parameters.AddWithValue("@Moderator", modUser.Id);
+                command.Parameters.AddWithValue("@Channel", channel.Id);
+                command.Parameters.AddWithValue("@Time", DateTime.Now);
+                command.Parameters.AddWithValue("@Reason", reason);
+
+                command.ExecuteNonQuery();
+            }
 
 
 
-
-            /*string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"infractions.txt");
-            StreamReader reader = new StreamReader(path);
-            string data = await reader.ReadToEndAsync();
-            reader.Close(); //close to allow writer to open
-            StreamWriter writer = new StreamWriter(path);
-            await writer.WriteAsync(data);
-            await writer.WriteLineAsync(reason);
-            writer.Close();*/
-        }
+                /*string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"infractions.txt");
+                StreamReader reader = new StreamReader(path);
+                string data = await reader.ReadToEndAsync();
+                reader.Close(); //close to allow writer to open
+                StreamWriter writer = new StreamWriter(path);
+                await writer.WriteAsync(data);
+                await writer.WriteLineAsync(reason);
+                writer.Close();*/
+            }
     }
 }

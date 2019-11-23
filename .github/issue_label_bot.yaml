@@ -2,3 +2,5 @@ label-alias:
   bug: 'bug'
   feature_request: 'enhancement'
   question: 'question'
+  command: 'command'
+  auto_bot: 'auto-bot'

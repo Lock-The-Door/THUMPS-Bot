@@ -70,12 +70,6 @@ namespace THUMPSBot
     {
         public async Task<Embed> FindInfractions(IGuildUser infringer, DiscordSocketClient client)
         {
-            /*string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"infractions.txt");
-            StreamReader reader = new StreamReader(path);
-            string output = await reader.ReadToEndAsync();
-            reader.Close();
-            return output;*/
-
             //access the database
             string connectionString = @"Data Source=(localdb)\ProjectsV13;Initial Catalog=Infractions;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 
@@ -192,6 +186,10 @@ namespace THUMPSBot
 
         public async Task LogInfraction(string reason)
         {
+
+
+
+
             /*string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"infractions.txt");
             StreamReader reader = new StreamReader(path);
             string data = await reader.ReadToEndAsync();
@@ -200,7 +198,6 @@ namespace THUMPSBot
             await writer.WriteAsync(data);
             await writer.WriteLineAsync(reason);
             writer.Close();*/
-            
         }
     }
 }

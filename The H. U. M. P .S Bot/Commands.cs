@@ -51,6 +51,49 @@ namespace THUMPSBot
     }
     
     //Finished Commands
+    public class Moderation : ModuleBase<SocketCommandContext>
+    {
+        [Command("warn")]
+        [RequireUserPermission(GuildPermission.KickMembers, ErrorMessage = "You are not allowed to use this command because you are not a moderator", Group = "Permision", NotAGuildErrorMessage = "This can only be used in a guild")]
+        [Summary("Warns a user and logs it")]
+        public async Task Warn(IGuildUser user, [Remainder] string reason)
+        {
+            await actions.LogInfraction(user, Context.User, Context.Channel, reason);
+
+            if (string.IsNullOrWhiteSpace(reason))
+                reason = "No reason provided.";
+            //Build embeds
+            Embed warnReplyEmbed = new EmbedBuilder
+            {
+                Author = new EmbedAuthorBuilder
+                {
+                    IconUrl = user.GetAvatarUrl(),
+                    Name = user.Username + " has been warned!"
+                },
+                Description = reason,
+                Color = Color.Orange
+                //add more statistics in later update
+            }.Build();
+            EmbedBuilder warnLogEmbedBuilder = new EmbedBuilder
+            {
+                Author = new EmbedAuthorBuilder
+                {
+                    IconUrl = user.GetAvatarUrl(),
+                    Name = user.Username + " has been warned!"
+                },
+                Color = Color.Orange
+            };
+            warnLogEmbedBuilder.AddField("Moderator", Context.User.Mention, true).AddField("Channel", Context.Channel, true);
+            warnLogEmbedBuilder.AddField("Reason", reason);
+            Embed warnLogEmbed = warnLogEmbedBuilder.Build();
+
+            //reply to executer
+            await ReplyAsync(embed: warnReplyEmbed);
+            //send mesage to admin channel
+            await Context.Guild.GetTextChannel(644941989883674645).SendMessageAsync(embed: warnLogEmbed);
+        }
+    }
+    
     public class Miscellaneous : ModuleBase<SocketCommandContext>
     {
         [Command("help")]

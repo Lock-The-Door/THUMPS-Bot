@@ -66,7 +66,8 @@ namespace THUMPSBot
                     IconUrl = user.GetAvatarUrl(),
                     Name = user.Username + " has been warned!"
                 },
-                Description = reason
+                Description = reason,
+                Color = Color.Orange
                 //add more statistics in later update
             }.Build();
             EmbedBuilder warnLogEmbedBuilder = new EmbedBuilder
@@ -75,7 +76,8 @@ namespace THUMPSBot
                 {
                     IconUrl = user.GetAvatarUrl(),
                     Name = user.Username + " has been warned!"
-                }
+                },
+                Color = Color.Orange
             };
             warnLogEmbedBuilder.AddField("Moderator", Context.User.Mention, true).AddField("Channel", Context.Channel, true);
             warnLogEmbedBuilder.AddField("Reason", reason);

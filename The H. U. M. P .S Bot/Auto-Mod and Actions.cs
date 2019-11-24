@@ -196,26 +196,23 @@ namespace THUMPSBot
             {
                 await connection.OpenAsync();
 
+                //convert infringing id
+                Console.WriteLine(infringingUser.Id);
+                long longInfringingId = Convert.ToInt64(infringingUser.Id);
+                //convert mod id
+                long longModId = Convert.ToInt64(infringingUser.Id);
+                //convert channel id
+                long longChannelId = Convert.ToInt64(infringingUser.Id);
+
                 //set varibles
-                command.Parameters.AddWithValue("@Infringer", infringingUser.Id);
-                command.Parameters.AddWithValue("@Moderator", modUser.Id);
-                command.Parameters.AddWithValue("@Channel", channel.Id);
+                command.Parameters.AddWithValue("@Infringer", longInfringingId);
+                command.Parameters.AddWithValue("@Moderator", longModId);
+                command.Parameters.AddWithValue("@Channel", longChannelId);
                 command.Parameters.AddWithValue("@Time", DateTime.Now);
                 command.Parameters.AddWithValue("@Reason", reason);
 
                 command.ExecuteNonQuery();
             }
-
-
-
-                /*string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"infractions.txt");
-                StreamReader reader = new StreamReader(path);
-                string data = await reader.ReadToEndAsync();
-                reader.Close(); //close to allow writer to open
-                StreamWriter writer = new StreamWriter(path);
-                await writer.WriteAsync(data);
-                await writer.WriteLineAsync(reason);
-                writer.Close();*/
-            }
+        }
     }
 }

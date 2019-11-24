@@ -39,15 +39,7 @@ namespace THUMPSBot
     [RequireOwner(ErrorMessage = "This command are not ready yet")]
     public class InDevModule : ModuleBase<SocketCommandContext>
     {
-        Mod_Actions actions = new Mod_Actions();
-
-        [Command("infractions")]
-        [Summary("Finds infractions")]
-        public async Task Infractions(IGuildUser user)
-        {
-            Embed infractions = await actions.FindInfractions(user, Context.Client);
-            await ReplyAsync(embed: infractions);
-        }
+        
     }
     
     //Finished Commands
@@ -58,12 +50,9 @@ namespace THUMPSBot
         [Command("warn")]
         [RequireUserPermission(GuildPermission.KickMembers, ErrorMessage = "You are not allowed to use this command because you are not a moderator", Group = "Permision", NotAGuildErrorMessage = "This can only be used in a guild")]
         [Summary("Warns a user and logs it")]
-        public async Task Warn(IGuildUser user, [Remainder] string reason)
+        public async Task Warn(IGuildUser user, [Remainder] string reason = "No reason provided")
         {
             await actions.LogInfraction(user, Context.User, Context.Channel, reason);
-
-            if (string.IsNullOrWhiteSpace(reason))
-                reason = "No reason provided.";
             //Build embeds
             Embed warnReplyEmbed = new EmbedBuilder
             {
@@ -93,6 +82,19 @@ namespace THUMPSBot
             await ReplyAsync(embed: warnReplyEmbed);
             //send mesage to admin channel
             await Context.Guild.GetTextChannel(644941989883674645).SendMessageAsync(embed: warnLogEmbed);
+        }
+
+        [Command("infractions")]
+        [RequireContext(contexts: ContextType.Guild, ErrorMessage = "This command is for guilds only", Group = "Guild Command")]
+        [Summary("Finds infractions")]
+        public async Task Infractions(IGuildUser user)
+        {
+            Embed infractions = await actions.FindInfractions(user, Context.Client);
+            //The following zombie code is for spam purposes. In case of spam remove comments
+            //if (Context.Client.GetGuild(597798914606759959).GetUser(Context.User.Id).GuildPermissions.KickMembers)
+                await ReplyAsync(embed: infractions);
+            //else
+                //await Context.User.SendMessageAsync(embed: infractions);
         }
     }
     

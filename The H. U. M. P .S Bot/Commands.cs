@@ -52,36 +52,44 @@ namespace THUMPSBot
         [Summary("Warns a user and logs it")]
         public async Task Warn(IGuildUser user, [Remainder] string reason = "No reason provided")
         {
-            await actions.LogInfraction(user, Context.User, Context.Channel, reason);
-            //Build embeds
-            Embed warnReplyEmbed = new EmbedBuilder
+            //only allow the user in this context warn people who have a lower role than them
+            if (Tools_and_Functions.GetHighestRolePosition(user, Context.Client) < Tools_and_Functions.GetHighestRolePosition(Context.Client.GetGuild(597798914606759959).GetUser(Context.User.Id), Context.Client) /*|| Context.User.Id == 374284798820352000*/)
             {
-                Author = new EmbedAuthorBuilder
+                await actions.LogInfraction(user, Context.User, Context.Channel, reason);
+                //Build embeds
+                Embed warnReplyEmbed = new EmbedBuilder
                 {
-                    IconUrl = user.GetAvatarUrl(),
-                    Name = user.Username + " has been warned!"
-                },
-                Description = reason,
-                Color = Color.Orange
-                //add more statistics in later update
-            }.Build();
-            EmbedBuilder warnLogEmbedBuilder = new EmbedBuilder
-            {
-                Author = new EmbedAuthorBuilder
+                    Author = new EmbedAuthorBuilder
+                    {
+                        IconUrl = user.GetAvatarUrl(),
+                        Name = user.Username + " has been warned!"
+                    },
+                    Description = reason,
+                    Color = Color.Orange
+                    //add more statistics in later update
+                }.Build();
+                EmbedBuilder warnLogEmbedBuilder = new EmbedBuilder
                 {
-                    IconUrl = user.GetAvatarUrl(),
-                    Name = user.Username + " has been warned!"
-                },
-                Color = Color.Orange
-            };
-            warnLogEmbedBuilder.AddField("Moderator", Context.User.Mention, true).AddField("Channel", Context.Channel, true);
-            warnLogEmbedBuilder.AddField("Reason", reason);
-            Embed warnLogEmbed = warnLogEmbedBuilder.Build();
+                    Author = new EmbedAuthorBuilder
+                    {
+                        IconUrl = user.GetAvatarUrl(),
+                        Name = user.Username + " has been warned!"
+                    },
+                    Color = Color.Orange
+                };
+                warnLogEmbedBuilder.AddField("Moderator", Context.User.Mention, true).AddField("Channel", Context.Channel, true);
+                warnLogEmbedBuilder.AddField("Reason", reason);
+                Embed warnLogEmbed = warnLogEmbedBuilder.Build();
 
-            //reply to executer
-            await ReplyAsync(embed: warnReplyEmbed);
-            //send mesage to admin channel
-            await Context.Guild.GetTextChannel(644941989883674645).SendMessageAsync(embed: warnLogEmbed);
+                //reply to executer
+                await ReplyAsync(embed: warnReplyEmbed);
+                //send mesage to admin channel
+                await Context.Guild.GetTextChannel(644941989883674645).SendMessageAsync(embed: warnLogEmbed);
+            }
+            else
+            {
+                await ReplyAsync("You cannot warn a user that has a equal or higher role than you");
+            }
         }
 
         [Command("infractions")]

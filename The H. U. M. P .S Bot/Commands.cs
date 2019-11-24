@@ -18,7 +18,7 @@ namespace THUMPSBot
 
         [Command("inputTest")]
         [Summary("Tests input by sending a echo")]
-        public async Task InputTest([Remainder]string input) => await ReplyAsync(input);
+        public async Task InputTest([Remainder]string input = "No input provided") => await ReplyAsync(input);
 
         [Command("save")]
         [Summary("Test saving mechanics")]

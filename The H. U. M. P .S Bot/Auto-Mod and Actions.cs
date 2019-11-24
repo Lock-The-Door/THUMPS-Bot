@@ -200,9 +200,9 @@ namespace THUMPSBot
                 Console.WriteLine(infringingUser.Id);
                 long longInfringingId = Convert.ToInt64(infringingUser.Id);
                 //convert mod id
-                long longModId = Convert.ToInt64(infringingUser.Id);
+                long longModId = Convert.ToInt64(modUser.Id);
                 //convert channel id
-                long longChannelId = Convert.ToInt64(infringingUser.Id);
+                long longChannelId = Convert.ToInt64(channel.Id);
 
                 //set varibles
                 command.Parameters.AddWithValue("@Infringer", longInfringingId);

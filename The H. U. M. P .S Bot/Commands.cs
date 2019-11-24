@@ -50,7 +50,7 @@ namespace THUMPSBot
         [Command("warn")]
         [RequireUserPermission(GuildPermission.KickMembers, ErrorMessage = "You are not allowed to use this command because you are not a moderator", Group = "Permision", NotAGuildErrorMessage = "This can only be used in a guild")]
         [Summary("Warns a user and logs it")]
-        public async Task Warn(IGuildUser user, [Remainder] string reason)
+        public async Task Warn(IGuildUser user, [Remainder] string reason = "")
         {
             await actions.LogInfraction(user, Context.User, Context.Channel, reason);
 

@@ -55,15 +55,11 @@ namespace THUMPSBot
 
             //test for bad words
             if (combinedMessage.Contains("nigger"))
-            {
-                reason = "n-word";
-                return true;
-            }
+            { reason = "n-word"; return true; }
             else if (combinedMessage.Contains("niga"))
-            {
-                reason = "n-word slang";
-                return true;
-            }
+            { reason = "n-word slang"; return true; }
+            else if (combinedMessage.Contains("nlgger"))
+            { reason = "n-word with l"; return true; }
             reason = "";
             return false;
         }

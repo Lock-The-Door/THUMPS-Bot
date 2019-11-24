@@ -53,6 +53,8 @@ namespace THUMPSBot
     //Finished Commands
     public class Moderation : ModuleBase<SocketCommandContext>
     {
+        Mod_Actions actions = new Mod_Actions()
+        
         [Command("warn")]
         [RequireUserPermission(GuildPermission.KickMembers, ErrorMessage = "You are not allowed to use this command because you are not a moderator", Group = "Permision", NotAGuildErrorMessage = "This can only be used in a guild")]
         [Summary("Warns a user and logs it")]

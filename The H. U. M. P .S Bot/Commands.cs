@@ -48,7 +48,56 @@ namespace THUMPSBot
             Embed infractions = await actions.FindInfractions(user, Context.Client);
             await ReplyAsync(embed: infractions);
         }
+    }
+    
+    //Finished Commands
+    public class Moderation : ModuleBase<SocketCommandContext>
+    {
+        Mod_Actions actions = new Mod_Actions();
+        
+        [Command("warn")]
+        [RequireUserPermission(GuildPermission.KickMembers, ErrorMessage = "You are not allowed to use this command because you are not a moderator", Group = "Permision", NotAGuildErrorMessage = "This can only be used in a guild")]
+        [Summary("Warns a user and logs it")]
+        public async Task Warn(IGuildUser user, [Remainder] string reason)
+        {
+            await actions.LogInfraction(user, Context.User, Context.Channel, reason);
 
+            if (string.IsNullOrWhiteSpace(reason))
+                reason = "No reason provided.";
+            //Build embeds
+            Embed warnReplyEmbed = new EmbedBuilder
+            {
+                Author = new EmbedAuthorBuilder
+                {
+                    IconUrl = user.GetAvatarUrl(),
+                    Name = user.Username + " has been warned!"
+                },
+                Description = reason,
+                Color = Color.Orange
+                //add more statistics in later update
+            }.Build();
+            EmbedBuilder warnLogEmbedBuilder = new EmbedBuilder
+            {
+                Author = new EmbedAuthorBuilder
+                {
+                    IconUrl = user.GetAvatarUrl(),
+                    Name = user.Username + " has been warned!"
+                },
+                Color = Color.Orange
+            };
+            warnLogEmbedBuilder.AddField("Moderator", Context.User.Mention, true).AddField("Channel", Context.Channel, true);
+            warnLogEmbedBuilder.AddField("Reason", reason);
+            Embed warnLogEmbed = warnLogEmbedBuilder.Build();
+
+            //reply to executer
+            await ReplyAsync(embed: warnReplyEmbed);
+            //send mesage to admin channel
+            await Context.Guild.GetTextChannel(644941989883674645).SendMessageAsync(embed: warnLogEmbed);
+        }
+    }
+    
+    public class Miscellaneous : ModuleBase<SocketCommandContext>
+    {
         [Command("help")]
         [Summary("A command to find all avalible commands to the user")]
         public async Task Help()
@@ -60,18 +109,25 @@ namespace THUMPSBot
                                             services: null);
 
             await ReplyAsync("Here are all my commands that you can use!");
+            
+            List<string> uselessModules = new List<string>();//list for unusable commands
+            uselessModules.Add("TestModule");
+            uselessModules.Add("InDevModule");
 
             foreach (ModuleInfo module in commandService.Modules)
             {
-                embedBuilder.Title = module.Name;
-                foreach (CommandInfo command in module.Commands)
+                if (uselessModules.Contains(module.Name))
                 {
-                    // Get the command Summary attribute information
-                    string embedFieldText = command.Summary ?? "No description available\n";
+                    embedBuilder.Title = module.Name;
+                    foreach (CommandInfo command in module.Commands)
+                    {
+                        // Get the command Summary attribute information
+                        string embedFieldText = command.Summary ?? "No description available\n";
 
-                    embedBuilder.AddField("!" + command.Name, embedFieldText);
+                        embedBuilder.AddField("!" + command.Name, embedFieldText);
+                    }
+                    await ReplyAsync(embed: embedBuilder.Build());
                 }
-                await ReplyAsync(embed: embedBuilder.Build());
             }
         }
     }

@@ -45,6 +45,9 @@ namespace THUMPSBot
                         case 'ï':
                             nc = 'i';
                             break;
+                        case 'ń':
+                            nc = 'n';
+                            break;
                     }
                     combinedMessage += nc;
                 }

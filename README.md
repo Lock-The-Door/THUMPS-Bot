@@ -10,13 +10,17 @@ To get all availible commands, do "!help"
 ## Auto-mod
 - Detects and logs bad words while replacing similar special characters into normal letters
 ## Commands
+### Moderation
+- Infractions (Shows a user's infractions) 
+
+- Warn (Warns a user)
+### Miscellaneous
 - Help (- Displays all avaliable commands)
-### In Development/Planned
-- Infractions (Done! Planned to be released with warn command) 
-
-- Warn (In Progress) 
-
-- Clear (Not Started) 
+# In Development/Planned
+## Commands
+- Clear (Not Started)
+## Auto-Bot
+- Auto-Consequence (mutes, kicks, and warns members for misbehaving)
 # Possible Future Features
 ## Auto-bot
 - Easily get roles through reaction

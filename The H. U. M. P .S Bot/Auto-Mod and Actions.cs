@@ -152,8 +152,11 @@ namespace THUMPSBot
                 //take the 10 latest infractions
                 while (userInfractions.Count > 5)
                 {
-                    userInfractions.RemoveAt(userInfractions.Count - 1);
+                    userInfractions.RemoveAt(0);
                 }
+
+                //reverse order so it's from newest to oldest
+                userInfractions.Reverse();
 
                 string infractionString = ""; //infractions
                 //go through each matching infraction
@@ -162,11 +165,11 @@ namespace THUMPSBot
                     //get the info stored
 
                     //get mod who gave warn
-                    IUser mod = client.GetUser(ulong.Parse(infraction.ItemArray[2].ToString()));
+                    IUser mod = client.GetUser(Convert.ToUInt64(long.Parse(infraction.ItemArray[2].ToString())));
                     infractionString += "**Moderator:** " + mod.Username;
 
                     //channel user was warned in
-                    IChannel channel = client.GetChannel(ulong.Parse(infraction.ItemArray[3].ToString()));
+                    IChannel channel = client.GetChannel(Convert.ToUInt64(long.Parse(infraction.ItemArray[3].ToString())));
                     infractionString += "\n**Channel:** #" + channel.Name;
 
                     //date and time user was warned

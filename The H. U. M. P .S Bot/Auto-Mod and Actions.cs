@@ -152,7 +152,7 @@ namespace THUMPSBot
                 //take the 10 latest infractions
                 while (userInfractions.Count > 5)
                 {
-                    userInfractions.RemoveAt(userInfractions.Count - 1);
+                    userInfractions.RemoveAt(0);
                 }
 
                 string infractionString = ""; //infractions

@@ -60,6 +60,8 @@ namespace THUMPSBot
             { reason = "n-word slang"; return true; }
             else if (combinedMessage.Contains("nlgger"))
             { reason = "n-word with l"; return true; }
+            else if (combinedMessage.Contains("n#gger"))
+            { reason = "n-word with #"; return true; }
             reason = "";
             return false;
         }

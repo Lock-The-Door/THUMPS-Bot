@@ -1,4 +1,5 @@
-# THUMPS Bot
+[![Build Status](https://dev.azure.com/Lock-The-Door/THUMPS%20Bot/_apis/build/status/Lock-The-Door.THUMPS-Bot?branchName=master)](https://dev.azure.com/Lock-The-Door/THUMPS%20Bot/_build/latest?definitionId=4&branchName=master)
+# THUMPS Bot 
 Also known as The Homeless Uneducated Moronic Perverted Stupid Bot!
 
 It's the one and only bot designed for the HUMPS Server!

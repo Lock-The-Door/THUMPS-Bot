@@ -33,6 +33,7 @@ namespace THUMPSBot
                         case 'é':
                         case 'ę':
                         case 'ê':
+                        case 'ė':
                             nc = 'e';
                             break;
                         case '9':
@@ -44,6 +45,9 @@ namespace THUMPSBot
                         case 'î':
                         case 'ï':
                             nc = 'i';
+                            break;
+                        case 'ł':
+                            nc = 'l';
                             break;
                         case 'ń':
                             nc = 'n';
@@ -62,6 +66,8 @@ namespace THUMPSBot
             { reason = "n-word with l"; return true; }
             else if (combinedMessage.Contains("n#gger"))
             { reason = "n-word with #"; return true; }
+            else if (combinedMessage.Contains("n’gger") || combinedMessage.Contains("n\"gger"))
+            { reason = "n-word with quotation marks (' and \")"; return true; }
             reason = "";
             return false;
         }

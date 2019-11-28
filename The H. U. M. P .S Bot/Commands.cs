@@ -1,7 +1,8 @@
-using Discord;
+﻿using Discord;
 using Discord.Commands;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace THUMPSBot
@@ -39,7 +40,87 @@ namespace THUMPSBot
     [RequireOwner(ErrorMessage = "This command are not ready yet")]
     public class InDevModule : ModuleBase<SocketCommandContext>
     {
-        
+        [Command("clear")]
+        [RequireContext(contexts: ContextType.Guild, ErrorMessage = "This command can only be used in a guild", Group = "Guild Command")]
+        [Summary("Clears messages in a channel")]
+        public async Task Clear(int messages = 0)
+        {
+            //reply with info
+            IMessage originalMessage = await ReplyAsync("Clearing " + messages + " messages.");
+            Thread.Sleep(1000);
+            //delete command usage and reply
+            await originalMessage.DeleteAsync();
+            await Context.Message.DeleteAsync();
+
+            //set up variables
+            var messagesInRangeAsyncEnum = Context.Channel.GetMessagesAsync(limit: messages);
+            var messagesInRange = await messagesInRangeAsyncEnum.FlattenAsync();
+            ITextChannel contextTextChannel = Context.Channel as ITextChannel;
+
+            //delete messages in bulk
+            await contextTextChannel.DeleteMessagesAsync(messagesInRange);
+
+            //reply with successful message and delete it after
+            IMessage doneMessage = await ReplyAsync("Message deletion successful!");
+            Thread.Sleep(1000);
+            await doneMessage.DeleteAsync();
+
+            //The following zombie code is for a better, more secure, and more accidental proof clear command
+            /*Tools_and_Tasks tasks = new Tools_and_Tasks 
+            {
+                client = Context.Client
+            };//This command requires tools and tasks class
+            tasks.Setup();//setup triggers
+
+            if (messages == 0) //detect for errors in parameter
+            {
+                await ReplyAsync("You must specify a valid number of messages to delete");
+                return;
+            }
+
+            //create a warning message before deleting messages
+            IUserMessage originalMessage = await ReplyAsync("Attempting to delete " + messages + " messages in 10 seconds. React with :negative_squared_cross_mark: to cancel");
+            System.Console.WriteLine("\u2612");
+            await originalMessage.AddReactionAsync(new Emoji("❎"));
+
+            //get messages
+            var messagesInRangeAsyncEnum = Context.Channel.GetMessagesAsync(limit: messages, fromMessage: originalMessage, dir: Direction.Before);
+            var messagesInRange = await messagesInRangeAsyncEnum.FlattenAsync();
+
+            //find amount of messages found
+            int messageCountFound = 0;
+
+            //set up varibles for detecting pinned messages and counting messages detected
+            int pinnedMessages = 0;
+            foreach (var message in messagesInRange)
+            {
+                messageCountFound++;
+
+                if (message.IsPinned)
+                    pinnedMessages++;
+            }
+
+            //set up reply string
+            string updateReply = "";
+
+            //add information to reply string
+            updateReply += messageCountFound + "/" + messages + " messages found in channel and " + pinnedMessages + " of those " + messageCountFound + " messages are pinned. ";
+
+            int nextWait = 5000; //how long to wait until action occurs
+
+            //add certain message depending if there is a pinned message or not
+            if (pinnedMessages > 0)
+            {
+                updateReply += "\nReact with :white_check_mark: to continue anyway or :negative_squared_cross_mark: to cancel. Canceling automatically in 10 seconds.";
+                updateReply = ":warning: ***WARNING!*** :warning: " + updateReply;
+
+                nextWait = 10000;
+            }
+            else
+            {
+                await tasks.ClearWaiter(nextWait, updateReply, tasks.executeClear, messages, Context.Client, Context.Channel.Id);
+            }*/
+        }
     }
     
     //Finished Commands

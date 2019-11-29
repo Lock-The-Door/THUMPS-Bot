@@ -68,6 +68,42 @@ namespace THUMPSBot
             { reason = "n-word with #"; return true; }
             else if (combinedMessage.Contains("n’gger") || combinedMessage.Contains("n\"gger"))
             { reason = "n-word with quotation marks (' and \")"; return true; }
+            else if (combinedMessage.Contains("kneeger"))
+            { reason = "knee-word (n-word that starts with knee)"; return true; }
+            
+
+            //secondary checks for unnessary letters that are included
+            char lastChar = ' '; //add last character for repeating checks
+            string nonrepeatingMessage = ""; //for new message
+            foreach (char letter in combinedMessage)
+            {
+                if (letter != lastChar) //if the character repeats ignore it
+                {
+                    nonrepeatingMessage += letter; //otherwise keep it
+                }
+            }
+
+            if (nonrepeatingMessage == combinedMessage) //let them go to not filter niger, a country. Fix this later.
+            {
+                reason = "";
+                return false;
+            }
+
+            //then run it through the checks again
+            if (combinedMessage.Contains("niger"))
+            { reason = "n-word with extra letters"; return true; }
+            else if (combinedMessage.Contains("niga"))
+            { reason = "n-word slang with extra letters"; return true; }
+            else if (combinedMessage.Contains("nlger"))
+            { reason = "n-word with l and extra letters"; return true; }
+            else if (combinedMessage.Contains("n#ger"))
+            { reason = "n-word with # and extra letters"; return true; }
+            else if (combinedMessage.Contains("n’ger") || combinedMessage.Contains("n\"gger"))
+            { reason = "n-word with quotation marks (' and \") and extra letters"; return true; }
+            else if (combinedMessage.Contains("kneger"))
+            { reason = "knee-word (n-word that starts with knee) with extra letters"; return true; }
+
+            //bad word not detected
             reason = "";
             return false;
         }

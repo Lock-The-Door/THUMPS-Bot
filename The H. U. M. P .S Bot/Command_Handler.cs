@@ -58,7 +58,7 @@ namespace THUMPSBot
             if (AutoMod.WordFilter(message.Content, out string reason))
             {
                 string link = "https://discordapp.com/channels/597798914606759959/" + message.Channel.Id + "/" + message.Id;
-                await message.Channel.SendMessageAsync(":exclamation: :eyes: :exclamation: " + message.Author.Mention + " " + link + " " + reason + " This will be logged and may be used against you.");
+                await message.Channel.SendMessageAsync(":exclamation: :eyes: :exclamation: " + message.Author.Mention + ", you used the " + reason + " This will be logged and may be used against you." + link);
                 string infractionMessage = "THUMPS Bot warned " + message.Author.Username + " with the id of " + message.Author.Id + " for " + reason + " in " + message.Channel.Name;
                 await actions.LogInfraction(message.Author, _client.CurrentUser, message.Channel, reason);
                 var channel = _client.GetChannel(644941989883674645) as ISocketMessageChannel;

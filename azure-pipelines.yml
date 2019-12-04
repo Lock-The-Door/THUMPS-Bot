@@ -21,6 +21,13 @@ steps:
   inputs:
     restoreSolution: '$(solution)'
 
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'restore'
+    projects: '**/*.csproj'
+    feedsToUse: 'select'
+    vstsFeed: '1c29384a-0a4e-497f-93ed-2cd29cc7711f'
+
 - task: VSBuild@1
   inputs:
     solution: '$(solution)'

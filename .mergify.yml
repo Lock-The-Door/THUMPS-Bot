@@ -1,8 +1,10 @@
 pull_request_rules:
-  - name: automatic merge on CI success and review
+  - name: Automatic Merge
     conditions:
-      - status-success=continuous-integration/build
+      - status-success=build
       - "#approved-reviews-by>=1"
+      - "#approved-reviews-by=@Lock-The-Door"
+      - conflict=false
     actions:
       merge:
         method: rebase

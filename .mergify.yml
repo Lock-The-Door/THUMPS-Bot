@@ -3,7 +3,7 @@ pull_request_rules:
     conditions:
       - status-success=build
       - "#approved-reviews-by>=1"
-      - conflict!=true
+      - conflict
     actions:
       merge:
         method: rebase

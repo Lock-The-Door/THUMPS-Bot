@@ -2,7 +2,6 @@ pull_request_rules:
   - name: Automatic Merge
     conditions:
       - status-success=build
-      - "#approved-reviews-by>=1"
       - "#approved-reviews-by=@Lock-The-Door"
       - conflict=false
     actions:

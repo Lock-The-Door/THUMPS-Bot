@@ -10,6 +10,11 @@ namespace THUMPSBot
 {
     public static class AutoMod
     {
+      
+        public static bool npunish(String reason){
+            String nreason = reason; 
+            return true;
+        }
         
         public static bool WordFilter(string message, out string reason)
         {
@@ -58,18 +63,25 @@ namespace THUMPSBot
             }
 
             //test for bad words
-            if (combinedMessage.Contains("nigger"))
-            { reason = "n-word"; return true; }
-            else if (combinedMessage.Contains("niga"))
-            { reason = "n-word slang"; return true; }
-            else if (combinedMessage.Contains("nlgger"))
-            { reason = "n-word with l"; return true; }
-            else if (combinedMessage.Contains("n#gger"))
-            { reason = "n-word with #"; return true; }
-            else if (combinedMessage.Contains("n’gger") || combinedMessage.Contains("n\"gger"))
-            { reason = "n-word with quotation marks (' and \")"; return true; }
-            else if (combinedMessage.Contains("kneeger"))
-            { reason = "knee-word (n-word that starts with knee)"; return true; }
+            
+            
+            switch(combinedMessage.Contains){
+                case "nigger": npunish("n-word");
+                break;
+                case "niga": npunish("n-word slang");
+                break;
+                case "n1gger": npunish("n-word with l");
+                break;
+                case "n#gger": npunish("n-word with #");
+                break;
+                case "n'gger": npunish("n-word with '");
+                break;
+                case "n\gger": npunish("n-word with \");
+                break;
+                case "kneeger": npunish("n-word that starts with knee");
+                break;
+                   
+            }
             
 
             //secondary checks for unnessary letters that are included

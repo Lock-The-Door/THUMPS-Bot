@@ -6,3 +6,6 @@ pull_request_rules:
     actions:
       merge:
         method: rebase
+  - name: Master Protection Merge
+    conditions:
+      - base=master

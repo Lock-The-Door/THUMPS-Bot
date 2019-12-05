@@ -9,3 +9,6 @@ pull_request_rules:
   - name: Master Protection Merge
     conditions:
       - base=master
+    actions:
+      merge:
+        method: merge

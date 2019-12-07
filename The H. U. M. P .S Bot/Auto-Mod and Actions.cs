@@ -284,7 +284,7 @@ namespace THUMPSBot
                     IconUrl = infringingUser.GetAvatarUrl(),
                     Name = infringingUser.Username + " has been warned!"
                 },
-                Color = Color.Orange
+                Color = new Color(230, 200, 0)
             };
             warnLogEmbedBuilder.AddField("Moderator", modUser, true).AddField("Channel", channel, true);
             warnLogEmbedBuilder.AddField("Reason", reason);
@@ -479,7 +479,7 @@ namespace THUMPSBot
                     IconUrl = infringer.GetAvatarUrl(),
                     Name = infringer.Username + " has been warned!"
                 },
-                Color = Color.Red
+                Color = Color.Orange
             };
             muteLogEmbedBuilder.AddField("Moderator", mod, true).AddField("Channel", workingChannel, true);
             muteLogEmbedBuilder.AddField("Reason", reason);
@@ -504,7 +504,7 @@ namespace THUMPSBot
                     IconUrl = infringer.GetAvatarUrl(),
                     Name = infringer.Username + " has been warned!"
                 },
-                Color = Color.Red
+                Color = new Color(255, 70, 0)
             };
             kickLogEmbedBuilder.AddField("Moderator", mod, true).AddField("Channel", workingChannel, true);
             kickLogEmbedBuilder.AddField("Reason", reason);
@@ -573,7 +573,7 @@ namespace THUMPSBot
                     IconUrl = infringer.GetAvatarUrl(),
                     Name = infringer.Username + " has been warned!"
                 },
-                Color = Color.Red
+                Color = new Color(235, 0, 0)
             };
             banLogEmbedBuilder.AddField("Moderator", mod, true).AddField("Channel", workingChannel, true);
             banLogEmbedBuilder.AddField("Reason", reason);

@@ -58,8 +58,9 @@ namespace THUMPSBot
             if (AutoMod.WordFilter(message.Content, out string reason))
             {
                 string link = "https://discordapp.com/channels/597798914606759959/" + message.Channel.Id + "/" + message.Id;
-                await message.Channel.SendMessageAsync(":exclamation: :eyes: :exclamation: " + message.Author.Mention + " " + link + " " + reason + " This will be logged and may be used against you.");
+                await message.Channel.SendMessageAsync(":exclamation: :eyes: :exclamation: " + message.Author.Mention + ", you used the " + reason + " This will be logged and may be used against you." + link);
                 await actions.LogInfraction(message.Author, _client.CurrentUser, message.Channel, reason);
+              
                 return;
             }
 
@@ -85,7 +86,7 @@ namespace THUMPSBot
 
         private async Task Client_UserJoined(SocketGuildUser arg)
         {
-            if (arg.Id == 424297184822034444 || arg.Id == 272396560686514176 || arg.Id == 645401167542747136 || arg.Id == 601067664126902275) //rebanner
+            if (arg.Id == 424297184822034444 || /*arg.Id == 272396560686514176*/ arg.Id == 645401167542747136 || arg.Id == 601067664126902275) //rebanner
             {
                 await arg.Guild.GetTextChannel(644941983382503484).SendMessageAsync(arg.Username + "is blacklisted from this server.");
                 await arg.Guild.AddBanAsync(arg.Id);

@@ -14,6 +14,7 @@ namespace THUMPSBot
         
         public static bool WordFilter(string message, out string reason)
         {
+            reason = "";
             //get rid of special characters and spaces
             string combinedMessage = "";
             foreach (char c in message.ToLower().ToCharArray())
@@ -34,6 +35,7 @@ namespace THUMPSBot
                         case 'é':
                         case 'ę':
                         case 'ê':
+                        case 'ė':
                             nc = 'e';
                             break;
                         case '9':
@@ -41,10 +43,13 @@ namespace THUMPSBot
                             break;
                         case '1':
                         case '!':
-                        case '|':
                         case 'î':
                         case 'ï':
                             nc = 'i';
+                            break;
+                        case 'ł':
+                        case '|':
+                            nc = 'l';
                             break;
                         case 'ń':
                             nc = 'n';
@@ -56,13 +61,60 @@ namespace THUMPSBot
 
             //test for bad words
             if (combinedMessage.Contains("nigger"))
-            { reason = "n-word"; return true; }
+            { reason = "n-word"; }
             else if (combinedMessage.Contains("niga"))
-            { reason = "n-word slang"; return true; }
+            { reason = "n-word slang"; }
             else if (combinedMessage.Contains("nlgger"))
-            { reason = "n-word with l"; return true; }
-            reason = "";
-            return false;
+            { reason = "n-word with l"; }
+            else if (combinedMessage.Contains("n#gger"))
+            { reason = "n-word with #"; }
+            else if (combinedMessage.Contains("n’gger") || combinedMessage.Contains("n\"gger"))
+            { reason = "n-word with quotation marks (' and \")"; }
+            else if (combinedMessage.Contains("kneeger"))
+            { reason = "knee-word (n-word that starts with knee)"; }
+            else if (combinedMessage.Contains("nicker"))
+            { reason = "n-word with ck instead of gg"; }
+
+            if (reason != "")
+                return true;
+            
+
+            //secondary checks for unnessary letters that are included
+            char lastChar = ' '; //add last character for repeating checks
+            string nonrepeatingMessage = ""; //for new message
+            foreach (char letter in combinedMessage)
+            {
+                if (letter != lastChar) //if the character repeats ignore it
+                {
+                    nonrepeatingMessage += letter; //otherwise keep it
+                }
+            }
+
+            if (nonrepeatingMessage == combinedMessage) //let them go to not filter niger, a country. Fix this later.
+            {
+                reason = "";
+                return false;
+            }
+
+            //then run it through the checks again
+            if (combinedMessage.Contains("niger"))
+            { reason = "n-word with extra letters"; }
+            else if (combinedMessage.Contains("niga"))
+            { reason = "n-word slang with extra letters"; }
+            else if (combinedMessage.Contains("nlger"))
+            { reason = "n-word with l and extra letters"; }
+            else if (combinedMessage.Contains("n#ger"))
+            { reason = "n-word with # and extra letters"; }
+            else if (combinedMessage.Contains("n’ger") || combinedMessage.Contains("n\"gger"))
+            { reason = "n-word with quotation marks (' and \") and extra letters"; }
+            else if (combinedMessage.Contains("kneger"))
+            { reason = "knee-word (n-word that starts with knee) with extra letters"; }
+
+            if (reason != "")
+                return true;
+            //bad word not detected
+            else
+                return false;
         }
     }
 

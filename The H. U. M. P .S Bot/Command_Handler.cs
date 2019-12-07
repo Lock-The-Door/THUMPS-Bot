@@ -17,7 +17,7 @@ namespace THUMPSBot
         // Retrieve client and CommandService instance via ctor
         public Command_Handler(DiscordSocketClient client, CommandService commands)
         {
-            this._commands = commands;
+            _commands = commands;
             _client = client;
 
         }
@@ -59,10 +59,7 @@ namespace THUMPSBot
             {
                 string link = "https://discordapp.com/channels/597798914606759959/" + message.Channel.Id + "/" + message.Id;
                 await message.Channel.SendMessageAsync(":exclamation: :eyes: :exclamation: " + message.Author.Mention + " " + link + " " + reason + " This will be logged and may be used against you.");
-                string infractionMessage = "THUMPS Bot warned " + message.Author.Username + " with the id of " + message.Author.Id + " for " + reason + " in " + message.Channel.Name;
                 await actions.LogInfraction(message.Author, _client.CurrentUser, message.Channel, reason);
-                var channel = _client.GetChannel(644941989883674645) as ISocketMessageChannel;
-                await channel.SendMessageAsync(infractionMessage);
                 return;
             }
 

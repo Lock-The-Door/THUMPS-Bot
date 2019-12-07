@@ -68,7 +68,10 @@ namespace THUMPSBot
 
     public class Mod_Actions
     {
-        public async Task<Embed> FindInfractionsCommand(IGuildUser infringer, DiscordSocketClient client)
+        //set up oftenly used varibles
+        ulong adminChannelId = 644941989883674645;
+
+        public async Task<Embed> FindInfractions(IGuildUser infringer, DiscordSocketClient client)
         {
             List<DataRow> userInfractions = await GetInfractions(infringer);
 
@@ -191,7 +194,7 @@ namespace THUMPSBot
             return userInfractions;
         }
 
-        public async Task LogInfraction(IUser infringingUser, IUser modUser, IChannel channel, string reason)
+        public async Task LogInfraction(IUser infringingUser, IUser modUser, ISocketMessageChannel channel, string reason)
         {
             //access the database
             string connectionString = @"Data Source=(localdb)\ProjectsV13;Initial Catalog=Infractions;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
@@ -220,6 +223,22 @@ namespace THUMPSBot
 
                 command.ExecuteNonQuery();
             }
+
+            //send embeded message to admin log
+            EmbedBuilder warnLogEmbedBuilder = new EmbedBuilder
+            {
+                Author = new EmbedAuthorBuilder
+                {
+                    IconUrl = infringingUser.GetAvatarUrl(),
+                    Name = infringingUser.Username + " has been warned!"
+                },
+                Color = Color.Orange
+            };
+            warnLogEmbedBuilder.AddField("Moderator", modUser, true).AddField("Channel", channel, true);
+            warnLogEmbedBuilder.AddField("Reason", reason);
+            Embed warnLogEmbed = warnLogEmbedBuilder.Build();
+            //send admin message
+            await (channel as ITextChannel).Guild.GetTextChannelAsync(adminChannelId).Result.SendMessageAsync(embed: warnLogEmbed);
 
             //after an infraction is logged, see if nessesary action needs to be taken
             await automodAction(infringingUser as IGuildUser, channel as ITextChannel);
@@ -323,7 +342,7 @@ namespace THUMPSBot
             }
             await redirectPunishment(type, format, length, infringer, workingChannel);
         }
-
+        
         public async Task redirectPunishment(char punishmentType, char punishmentLengthformat, int punishmentLength, IGuildUser infringer, ITextChannel workingChannel)
         {
             //ignore mods but give them a warning
@@ -333,22 +352,23 @@ namespace THUMPSBot
                 return;
             }
 
+            string reason = "getting too many infractions";
             //calculate punishement
             switch (punishmentType)
             {
                 case 'm':
-                    await Mute(punishmentLengthformat, punishmentLength, infringer, workingChannel, "getting too many infractions");
+                    await Mute(punishmentLengthformat, punishmentLength, infringer, await infringer.Guild.GetUserAsync(600155440076161047), workingChannel, reason);
                     break;
                 case 'k':
-                    await Kick(infringer, workingChannel);
+                    await Kick(infringer, await infringer.Guild.GetUserAsync(600155440076161047), workingChannel, reason);
                     break;
                 case 'b':
-                    await Ban(punishmentLengthformat, punishmentLength, infringer, workingChannel, "getting too many infractions");
+                    await Ban(punishmentLengthformat, punishmentLength, infringer, await infringer.Guild.GetUserAsync(600155440076161047), workingChannel, reason);
                     break;
             }
         }
 
-        public async Task Mute(char lengthFormat, int intLength, IGuildUser infringer, ITextChannel workingChannel, string reason)
+        public async Task Mute(char lengthFormat, int intLength, IGuildUser infringer, IGuildUser mod, ITextChannel workingChannel, string reason)
         {
             //detect length format
             DateTime length = new DateTime();
@@ -377,7 +397,7 @@ namespace THUMPSBot
                 //access the database
                 string connectionString = @"Data Source=(localdb)\ProjectsV13;Initial Catalog=Infractions;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 
-                string query = "INSERT INTO Punishments VALUES (@Infringer, Mute, @EndDateTime, @Reason)";
+                string query = "INSERT INTO Punishments VALUES (@Infringer, @Moderator, Mute, @EndDateTime, @Reason)";
 
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (SqlCommand command = new SqlCommand(query, connection))
@@ -386,23 +406,63 @@ namespace THUMPSBot
 
                     //convert infringing id
                     long longInfringingId = Convert.ToInt64(infringer.Id);
+                    //convert mod id
+                    long longModId = Convert.ToInt64(mod.Id);
 
                     //set varibles
                     command.Parameters.AddWithValue("@Infringer", longInfringingId);
+                    command.Parameters.AddWithValue("@Moderator", longModId);
                     command.Parameters.AddWithValue("@EndDateTime", length);
                     command.Parameters.AddWithValue("@Reason", reason);
 
                     command.ExecuteNonQuery();
                 }
             }
+
+            //make admin embed message
+            EmbedBuilder muteLogEmbedBuilder = new EmbedBuilder
+            {
+                Author = new EmbedAuthorBuilder
+                {
+                    IconUrl = infringer.GetAvatarUrl(),
+                    Name = infringer.Username + " has been warned!"
+                },
+                Color = Color.Red
+            };
+            muteLogEmbedBuilder.AddField("Moderator", mod, true).AddField("Channel", workingChannel, true);
+            muteLogEmbedBuilder.AddField("Reason", reason);
+            Embed muteLogEmbed = muteLogEmbedBuilder.Build();
+
+            //log in admin log
+            await infringer.Guild.GetTextChannelAsync(adminChannelId).Result.SendMessageAsync(embed: muteLogEmbed);
         }
 
-        public async Task Kick(IGuildUser infringer, ITextChannel workingChannel) //reason not required as linking this to a command is not planned at all (just do it the normal way)
+        public async Task Kick(IGuildUser infringer, IGuildUser mod, ITextChannel workingChannel, string reason) //reason not required as linking this to a command is not planned at all (just do it the normal way)
         {
             await workingChannel.SendMessageAsync("Kicking " + infringer.Mention + " for getting too many infractions");
+
+            //kick member
+            await infringer.KickAsync();
+
+            //make admin embed message
+            EmbedBuilder kickLogEmbedBuilder = new EmbedBuilder
+            {
+                Author = new EmbedAuthorBuilder
+                {
+                    IconUrl = infringer.GetAvatarUrl(),
+                    Name = infringer.Username + " has been warned!"
+                },
+                Color = Color.Red
+            };
+            kickLogEmbedBuilder.AddField("Moderator", mod, true).AddField("Channel", workingChannel, true);
+            kickLogEmbedBuilder.AddField("Reason", reason);
+            Embed kickLogEmbed = kickLogEmbedBuilder.Build();
+
+            //log in admin log
+            await infringer.Guild.GetTextChannelAsync(adminChannelId).Result.SendMessageAsync(embed: kickLogEmbed);
         }
 
-        public async Task Ban(char lengthFormat, int intLength, IGuildUser infringer, ITextChannel workingChannel, string reason)
+        public async Task Ban(char lengthFormat, int intLength, IGuildUser infringer, IGuildUser mod, ITextChannel workingChannel, string reason)
         {
             //detect length format
             DateTime length = DateTime.Now;
@@ -431,7 +491,7 @@ namespace THUMPSBot
                 //access the database
                 string connectionString = @"Data Source=(localdb)\ProjectsV13;Initial Catalog=Infractions;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 
-                string query = "INSERT INTO Punishments VALUES (@Infringer, Ban, @EndDateTime, @Reason)";
+                string query = "INSERT INTO Punishments VALUES (@Infringer, @Moderator, Ban, @EndDateTime, @Reason)";
 
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (SqlCommand command = new SqlCommand(query, connection))
@@ -440,15 +500,35 @@ namespace THUMPSBot
 
                     //convert infringing id
                     long longInfringingId = Convert.ToInt64(infringer.Id);
+                    //convert mod id
+                    long longModId = Convert.ToInt64(mod.Id);
 
                     //set varibles
                     command.Parameters.AddWithValue("@Infringer", longInfringingId);
+                    command.Parameters.AddWithValue("@Moderator", longModId);
                     command.Parameters.AddWithValue("@EndDateTime", length);
                     command.Parameters.AddWithValue("@Reason", reason);
 
                     command.ExecuteNonQuery();
                 }
             }
+
+            //make admin embed message
+            EmbedBuilder banLogEmbedBuilder = new EmbedBuilder
+            {
+                Author = new EmbedAuthorBuilder
+                {
+                    IconUrl = infringer.GetAvatarUrl(),
+                    Name = infringer.Username + " has been warned!"
+                },
+                Color = Color.Red
+            };
+            banLogEmbedBuilder.AddField("Moderator", mod, true).AddField("Channel", workingChannel, true);
+            banLogEmbedBuilder.AddField("Reason", reason);
+            Embed banLogEmbed = banLogEmbedBuilder.Build();
+
+            //log in admin log
+            await infringer.Guild.GetTextChannelAsync(adminChannelId).Result.SendMessageAsync(embed: banLogEmbed);
         }
     }
 }

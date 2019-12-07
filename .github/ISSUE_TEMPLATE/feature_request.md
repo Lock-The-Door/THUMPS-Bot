@@ -3,11 +3,11 @@ name: Feature request
 about: Suggest an idea for this project
 title: ''
 labels: ''
-assignees: ''
+assignees: Lock-The-Door
 
 ---
 
-# Descriptions
+# Description
 Provide a basic idea of what the bot has to achieve. 
 
 Example:

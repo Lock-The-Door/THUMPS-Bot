@@ -33,6 +33,30 @@ namespace THUMPSBot
         {
             await ReplyAsync(save.Load().Result);
         }
+        [Command("colour")]
+        [Summary("Test embed color")]
+        public async Task SendColour()
+        {
+            await ReplyAsync(embed: new EmbedBuilder { 
+                Description = "yellow",
+                Color = new Color(230, 200, 0)
+            }.Build());
+            await ReplyAsync(embed: new EmbedBuilder
+            {
+                Description = "orange",
+                Color = Color.Orange//new Color(230, 95, 30)
+            }.Build());
+            await ReplyAsync(embed: new EmbedBuilder
+            {
+                Description = "darkorange",
+                Color = new Color(255, 70, 0)
+            }.Build());
+            await ReplyAsync(embed: new EmbedBuilder
+            {
+                Description = "red",
+                Color = new Color(235, 0, 0)
+            }.Build());
+        }
     }
 
     [Group("indev")]

@@ -89,7 +89,7 @@ namespace THUMPSBot
                         Name = user.Username + " has been warned!"
                     },
                     Description = reason,
-                    Color = Color.Orange
+                    Color = new Color(230, 200, 0)
                     //add more statistics in later update
                 }.Build();
                 //reply to executer

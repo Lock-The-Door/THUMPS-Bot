@@ -248,42 +248,6 @@ namespace THUMPSBot
 
         public async Task LogInfraction(IUser infringingUser, IUser modUser, ISocketMessageChannel channel, string reason)
         {
-            List<DataRow> userInfractions = new List<DataRow>(); //create the list with all the infranger's infractions (created outside usings to safely close the connection after)
-
-            //access the database
-            string connectionString = @"Data Source=(localdb)\ProjectsV13;Initial Catalog=Infractions;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            using (SqlDataAdapter adapter = new SqlDataAdapter("SELECT * FROM Infractions", connectionString))
-            {
-                await connection.OpenAsync();
-
-                //get the infraction data
-                DataTable infractions = new DataTable();
-                adapter.Fill(infractions);
-
-                userInfractions.Capacity = infractions.Rows.Count; //resize it to minimum size
-
-                //go through each infraction
-                foreach (DataRow infraction in infractions.Rows)
-                {
-                    //find the right value and see if it's the right person. If so move it to the list
-                    string found = infraction[infractions.Columns[1]].ToString(); ;
-                    if (ulong.TryParse(found, out ulong foundId))
-                    {
-                        if (foundId == infringer.Id)
-                        {
-                            userInfractions.Add(infraction);
-                        }
-                    }
-                }
-            }
-
-            return userInfractions;
-        }
-
-        public async Task LogInfraction(IUser infringingUser, IUser modUser, ISocketMessageChannel channel, string reason)
-        {
             //access the database
             string connectionString = @"Data Source=(localdb)\ProjectsV13;Initial Catalog=THUMPS;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 

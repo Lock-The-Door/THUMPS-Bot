@@ -68,23 +68,8 @@ namespace THUMPSBot
                     Color = Color.Orange
                     //add more statistics in later update
                 }.Build();
-                EmbedBuilder warnLogEmbedBuilder = new EmbedBuilder
-                {
-                    Author = new EmbedAuthorBuilder
-                    {
-                        IconUrl = user.GetAvatarUrl(),
-                        Name = user.Username + " has been warned!"
-                    },
-                    Color = Color.Orange
-                };
-                warnLogEmbedBuilder.AddField("Moderator", Context.User.Mention, true).AddField("Channel", Context.Channel, true);
-                warnLogEmbedBuilder.AddField("Reason", reason);
-                Embed warnLogEmbed = warnLogEmbedBuilder.Build();
-
                 //reply to executer
                 await ReplyAsync(embed: warnReplyEmbed);
-                //send mesage to admin channel
-                await Context.Guild.GetTextChannel(644941989883674645).SendMessageAsync(embed: warnLogEmbed);
             }
             else
             {

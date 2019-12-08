@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using System;
@@ -62,7 +62,7 @@ namespace THUMPSBot
             //test for bad words
             if (combinedMessage.Contains("nigger"))
             { reason = "n-word"; }
-            else if (combinedMessage.Contains("niga"))
+            else if (combinedMessage.Contains("nigga") || combinedMessage.Contains("niga"))
             { reason = "n-word slang"; }
             else if (combinedMessage.Contains("nlgger"))
             { reason = "n-word with l"; }
@@ -74,6 +74,8 @@ namespace THUMPSBot
             { reason = "knee-word (n-word that starts with knee)"; }
             else if (combinedMessage.Contains("nicker"))
             { reason = "n-word with ck instead of gg"; }
+            else if (combinedMessage.Contains("niggr"))
+            { reason = "n-word without an e"; }
 
             if (reason != "")
                 return true;
@@ -215,7 +217,7 @@ namespace THUMPSBot
             List<DataRow> userInfractions = new List<DataRow>(); //create the list with all the infranger's infractions (created outside usings to safely close the connection after)
 
             //access the database
-            string connectionString = @"Data Source=(localdb)\ProjectsV13;Initial Catalog=Infractions;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            string connectionString = @"Data Source=(localdb)\ProjectsV13;Initial Catalog=THUMPS;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             using (SqlDataAdapter adapter = new SqlDataAdapter("SELECT * FROM Infractions", connectionString))
@@ -249,7 +251,7 @@ namespace THUMPSBot
         public async Task LogInfraction(IUser infringingUser, IUser modUser, ISocketMessageChannel channel, string reason)
         {
             //access the database
-            string connectionString = @"Data Source=(localdb)\ProjectsV13;Initial Catalog=Infractions;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            string connectionString = @"Data Source=(localdb)\ProjectsV13;Initial Catalog=THUMPS;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 
             string query = "INSERT INTO Infractions VALUES (@Infringer, @Moderator, @Channel, @Time, @Reason)";
 

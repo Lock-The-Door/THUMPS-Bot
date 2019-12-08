@@ -62,7 +62,7 @@ namespace THUMPSBot
             //test for bad words
             if (combinedMessage.Contains("nigger"))
             { reason = "n-word"; }
-            else if (combinedMessage.Contains("niga"))
+            else if (combinedMessage.Contains("nigga") || combinedMessage.Contains("niga"))
             { reason = "n-word slang"; }
             else if (combinedMessage.Contains("nlgger"))
             { reason = "n-word with l"; }
@@ -74,6 +74,8 @@ namespace THUMPSBot
             { reason = "knee-word (n-word that starts with knee)"; }
             else if (combinedMessage.Contains("nicker"))
             { reason = "n-word with ck instead of gg"; }
+            else if (combinedMessage.Contains("niggr"))
+            { reason = "n-word without an e"; }
 
             if (reason != "")
                 return true;

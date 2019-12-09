@@ -19,7 +19,7 @@ namespace THUMPSBot
             foreach (char c in message.ToLower().ToCharArray())
             {
                 char nc = c;
-                if (nc != '!' && nc != '.' && nc != ' ' && nc != ',' && nc != '/' && nc != '?' && nc != '_')
+                if (nc != '!' && nc != '.' && nc != ' ' && nc != ',' && nc != '/' && nc != '?' && nc != '_' && nc != ':')
                 {
                     /*if (c == '3' : 'ἕ' : 'è' : 'é' : 'ę' : 'ê')
                         nc = 'e';

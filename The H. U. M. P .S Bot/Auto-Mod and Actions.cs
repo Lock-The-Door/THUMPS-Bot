@@ -11,7 +11,6 @@ namespace THUMPSBot
 {
     public static class AutoMod
     {
-        
         public static bool WordFilter(string message, out string reason)
         {
             reason = "";
@@ -20,7 +19,7 @@ namespace THUMPSBot
             foreach (char c in message.ToLower().ToCharArray())
             {
                 char nc = c;
-                if (nc != '!' && nc != '.' && nc != ' ' && nc != ',' && nc != '/' && nc != '?' && nc != '_')
+                if (nc != '!' && nc != '.' && nc != ' ' && nc != ',' && nc != '/' && nc != '?' && nc != '_' && nc != ':')
                 {
                     /*if (c == '3' : 'ἕ' : 'è' : 'é' : 'ę' : 'ê')
                         nc = 'e';
@@ -543,7 +542,7 @@ namespace THUMPSBot
             {
                 //if it is, add the end time to the database
                 //access the database
-                string connectionString = @"Data Source=(localdb)\ProjectsV13;Initial Catalog=Infractions;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+                string connectionString = @"Data Source=(localdb)\ProjectsV13;Initial Catalog=THUMPS;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 
                 string query = "INSERT INTO Punishments VALUES (@Infringer, @Moderator, Ban, @EndDateTime, @Reason)";
 

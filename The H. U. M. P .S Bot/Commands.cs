@@ -1,5 +1,7 @@
 using Discord;
 using Discord.Commands;
+using Discord.Webhook;
+using Discord.WebSocket;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -92,7 +94,7 @@ namespace THUMPSBot
                     Color = Color.Orange
                     //add more statistics in later update
                 }.Build();
-                //reply to executer
+                //reply to executor
                 await ReplyAsync(embed: warnReplyEmbed);
             }
             else
@@ -114,11 +116,83 @@ namespace THUMPSBot
                 //await Context.User.SendMessageAsync(embed: infractions);
         }
     }
+
+    [Group ("DB")] //indev
+    [RequireServerOwner]
+    public class UserDatabase : ModuleBase<SocketCommandContext>
+    {
+        [Command("Update")]
+        [Summary("Rebuilds the user and status data table.")]
+        public async Task Update()
+        {
+            await new User_Flow_control(Context.Client).UpdateDB();
+        }
+
+        [Command("AddUser")]
+        [Summary("Adds a new user to the database.")]
+        public async Task AddUser(Discord.WebSocket.SocketGuildUser user, string status = "New User")
+        {
+            User_Flow_control userFlow = new User_Flow_control(Context.Client);
+
+            if (await userFlow.AddUser(user.Id, status))
+                await ReplyAsync($"Successfully added <@!{user.Id}> as {status}");
+            else
+            {
+                await ReplyAsync("A database entry for " + user.Mention + " already exists, updating user entry...");
+                await userFlow.UpdateUser(user.Id, status);
+                await ReplyAsync($"Successfully updated <@!{user.Id}> as {status}");
+            }
+        }
+        public async Task AddUser(ulong userId, string status = "New User")
+        {
+            User_Flow_control userFlow = new User_Flow_control(Context.Client);
+
+            if (await userFlow.AddUser(userId, status))
+                await ReplyAsync($"Successfully added <@!{userId}> as {status}");
+            else
+            {
+                await ReplyAsync("A database entry for " + Context.Client.GetUser(userId).Mention + " already exists, updating user entry...");
+                await userFlow.UpdateUser(userId, status);
+                await ReplyAsync($"Successfully updated <@!{userId}> as {status}");
+            }
+        }
+
+        [Command("Blacklist")]
+        [Summary("Blacklists a user")]
+        public async Task BlacklistUser(Discord.WebSocket.SocketGuildUser user)
+        {
+            User_Flow_control userFlow = new User_Flow_control(Context.Client);
+
+            if (await userFlow.AddUser(user.Id, "Blacklisted"))
+                await ReplyAsync($"Successfully added <@!{user.Id}> as Blacklisted");
+            else
+            {
+                await userFlow.UpdateUser(user.Id, "Blacklisted");
+                await ReplyAsync($"Successfully updated <@!{user.Id}> as Blacklisted");
+            }
+        }
+        [Command("Blacklist")]
+        [Summary("Blacklists a user")]
+        public async Task BlacklistUser(ulong userId)
+        {
+            User_Flow_control userFlow = new User_Flow_control(Context.Client);
+
+            SocketUser user = Context.Client.GetUser(userId);
+
+            if (await userFlow.AddUser(user.Id, "Blacklisted"))
+                await ReplyAsync($"Successfully added <@!{userId}> as Blacklisted");
+            else
+            {
+                await userFlow.UpdateUser(user.Id, "Blacklisted");
+                await ReplyAsync($"Successfully updated <@!{userId}> as Blacklisted");
+            }
+        }
+    }
     
     public class Miscellaneous : ModuleBase<SocketCommandContext>
     {
         [Command("help")]
-        [Summary("A command to find all avalible commands to the user")]
+        [Summary("A command to find all available commands to the user")]
         public async Task Help()
         {
             EmbedBuilder embedBuilder = new EmbedBuilder();

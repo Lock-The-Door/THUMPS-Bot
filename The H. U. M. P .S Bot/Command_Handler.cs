@@ -19,7 +19,6 @@ namespace THUMPSBot
         {
             _commands = commands;
             _client = client;
-
         }
 
         public async Task InstallCommandsAsync()
@@ -38,8 +37,11 @@ namespace THUMPSBot
             await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(),
                                             services: null);
 
-            _client.UserJoined += Client_UserJoined;
+            User_Flow_control userFlow = new User_Flow_control(_client);
+            _client.UserJoined += userFlow.Client_UserJoined;
             _client.UserLeft += Client_UserLeft;
+            _client.UserUpdated += userFlow.Client_UserUpdated;
+            _client.RoleUpdated += userFlow.Client_RoleUpdated;
         }
 
         private async Task HandleCommandAsync(SocketMessage messageParam)
@@ -58,7 +60,7 @@ namespace THUMPSBot
             if (AutoMod.WordFilter(message.Content, out string reason))
             {
                 string link = "https://discordapp.com/channels/597798914606759959/" + message.Channel.Id + "/" + message.Id;
-                await message.Channel.SendMessageAsync(":exclamation: :eyes: :exclamation: " + message.Author.Mention + ", you used the " + reason + " This will be logged and may be used against you." + link);
+                await message.Channel.SendMessageAsync(":exclamation: :eyes: :exclamation: " + message.Author.Mention + ", you used the " + reason + " This will be logged and may be used against you. " + link);
                 await actions.LogInfraction(message.Author, _client.CurrentUser, message.Channel, reason);
               
                 return;
@@ -84,29 +86,9 @@ namespace THUMPSBot
                 services: null);
         }
 
-        private async Task Client_UserJoined(SocketGuildUser arg)
-        {
-            if (arg.Id == 424297184822034444 || /*arg.Id == 272396560686514176*/ arg.Id == 645401167542747136 || arg.Id == 601067664126902275) //rebanner
-            {
-                await arg.Guild.GetTextChannel(644941983382503484).SendMessageAsync(arg.Username + "is blacklisted from this server.");
-                await arg.Guild.AddBanAsync(arg.Id);
-            }
-            else if (DateTime.Now.Subtract(arg.CreatedAt.Date).TotalDays < 11 || (arg.GetDefaultAvatarUrl() == arg.GetAvatarUrl() && arg.CreatedAt.Date < new DateTime(2019, 11, 1))) //quarentine for new accounts. If the icon is default but created after november 2019 it will also be quarentined
-            {
-                await arg.Guild.GetTextChannel(644941983382503484).SendMessageAsync(arg.Mention + ", your account is quite new. Due to recent events, we will have to verify you. Please dm " + arg.Guild.Owner.Mention);
-                await arg.AddRoleAsync(arg.Guild.GetRole(645413078405611540));
-            }
-            else //welcome message
-            {
-                await arg.AddRoleAsync(arg.Guild.GetRole(597929341308895252));
-                await arg.Guild.GetTextChannel(644941983382503484).SendMessageAsync(string.Format("Welcome {0}, we are currently repairing the server due to a security breach.", arg.Username));
-                await arg.SendMessageAsync(string.Format("Hi person named **{0}**, you just joined **{1}** owned by **{2}** so I decided to spam you. I hope you appreciate it! {3} \n\nStatistics of {1}:\nAmount of other people like you: **{4}**", arg.Username, arg.Guild.Name, arg.Guild.Owner, arg.Guild.IconUrl, arg.Guild.MemberCount));
-            }
-        }
-
         private async Task Client_UserLeft(SocketGuildUser arg)
         {
-            await arg.Guild.GetTextChannel(644941983382503484).SendMessageAsync(string.Format("**{0}** just left the server. Good for them...", arg.Username));
+            await arg.Guild.GetTextChannel(665723218773934100).SendMessageAsync(string.Format("<@!{0}> just left the server. Good for them...", arg.Id));
         }
     }
 }

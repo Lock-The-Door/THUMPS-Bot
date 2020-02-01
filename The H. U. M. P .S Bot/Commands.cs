@@ -128,11 +128,15 @@ namespace THUMPSBot
             await new User_Flow_control(Context.Client).UpdateDB();
         }
 
+        Dictionary<Cacheable<IUserMessage, ulong>, ulong> confirmations = new Dictionary<Cacheable<IUserMessage, ulong>, ulong>();
+
         [Command("AddUser")]
         [Summary("Adds a new user to the database.")]
-        public async Task AddUser(Discord.WebSocket.SocketGuildUser user, string status = "New User")
+        public async Task AddUser(SocketGuildUser user, string status = "New User")
         {
             User_Flow_control userFlow = new User_Flow_control(Context.Client);
+
+            await ReplyAsync($"Adding user {user.Mention} with the id of {user.Id} as {status}");
 
             if (await userFlow.AddUser(user.Id, status))
                 await ReplyAsync($"Successfully added <@!{user.Id}> as {status}");
@@ -143,15 +147,19 @@ namespace THUMPSBot
                 await ReplyAsync($"Successfully updated <@!{user.Id}> as {status}");
             }
         }
+        [Command("AddUser")]
+        [Summary("Adds a new user to the database.")]
         public async Task AddUser(ulong userId, string status = "New User")
         {
             User_Flow_control userFlow = new User_Flow_control(Context.Client);
+
+            await ReplyAsync($"Adding user <@!{userId}> with the id of {userId} as {status}");
 
             if (await userFlow.AddUser(userId, status))
                 await ReplyAsync($"Successfully added <@!{userId}> as {status}");
             else
             {
-                await ReplyAsync("A database entry for " + Context.Client.GetUser(userId).Mention + " already exists, updating user entry...");
+                await ReplyAsync("A database entry for " + Context.Client.Rest.GetUserAsync(userId).Result.Mention + " already exists, updating user entry...");
                 await userFlow.UpdateUser(userId, status);
                 await ReplyAsync($"Successfully updated <@!{userId}> as {status}");
             }
@@ -159,9 +167,11 @@ namespace THUMPSBot
 
         [Command("Blacklist")]
         [Summary("Blacklists a user")]
-        public async Task BlacklistUser(Discord.WebSocket.SocketGuildUser user)
+        public async Task BlacklistUser(SocketGuildUser user, [Remainder]string reason = "")
         {
             User_Flow_control userFlow = new User_Flow_control(Context.Client);
+
+            await Context.Guild.DownloadUsersAsync();
 
             if (await userFlow.AddUser(user.Id, "Blacklisted"))
                 await ReplyAsync($"Successfully added <@!{user.Id}> as Blacklisted");
@@ -170,22 +180,82 @@ namespace THUMPSBot
                 await userFlow.UpdateUser(user.Id, "Blacklisted");
                 await ReplyAsync($"Successfully updated <@!{user.Id}> as Blacklisted");
             }
+
+            //Now ban the user
+            await Context.Guild.AddBanAsync(user, reason: reason == "" ? "Blacklisted" : reason);
         }
         [Command("Blacklist")]
         [Summary("Blacklists a user")]
-        public async Task BlacklistUser(ulong userId)
+        public async Task BlacklistUser(ulong userId, [Remainder]string reason = "")
         {
             User_Flow_control userFlow = new User_Flow_control(Context.Client);
 
-            SocketUser user = Context.Client.GetUser(userId);
+            if (await Context.Client.Rest.GetUserAsync(userId) == null)
+                await ReplyAsync("I could not find the user you were looking for.");
 
-            if (await userFlow.AddUser(user.Id, "Blacklisted"))
+            if (await userFlow.AddUser(userId, "Blacklisted"))
                 await ReplyAsync($"Successfully added <@!{userId}> as Blacklisted");
             else
             {
-                await userFlow.UpdateUser(user.Id, "Blacklisted");
+                await userFlow.UpdateUser(userId, "Blacklisted");
                 await ReplyAsync($"Successfully updated <@!{userId}> as Blacklisted");
             }
+
+            //Now ban the user
+            await Context.Guild.AddBanAsync(Context.Client.Rest.GetUserAsync(userId).Result, reason: reason == "" ? "Blacklisted" : reason);
+        }
+
+        [Command("Quarantine")]
+        [Summary("Quarantines a user")]
+        public async Task QuarantineUser(SocketGuildUser user)
+        {
+            User_Flow_control userFlow = new User_Flow_control(Context.Client);
+
+            await Context.Guild.DownloadUsersAsync();
+
+            if (await userFlow.AddUser(user.Id, "Quarantined"))
+                await ReplyAsync($"Successfully added <@!{user.Id}> as Quarantined");
+            else
+            {
+                await userFlow.UpdateUser(user.Id, "Quarantined");
+                await ReplyAsync($"Successfully updated <@!{user.Id}> as Quarantined");
+            }
+
+            // Now remove all other roles and add quarantined role
+            foreach(IRole role in user.Roles)
+            {
+                if (role.Name == "@everyone")
+                    continue;
+                await user.RemoveRoleAsync(role);
+            }
+            await user.AddRoleAsync(Context.Guild.GetRole(645413078405611540));
+        }
+        [Command("Quarantine")]
+        [Summary("Quarantines a user")]
+        public async Task QuarantineUser(ulong userId)
+        {
+            User_Flow_control userFlow = new User_Flow_control(Context.Client);
+
+            if (await userFlow.AddUser(userId, "Quarantined"))
+                await ReplyAsync($"Successfully added <@!{userId}> as Quarantined");
+            else
+            {
+                await userFlow.UpdateUser(userId, "Quarantined");
+                await ReplyAsync($"Successfully updated <@!{userId}> as Quarantined");
+            }
+
+            SocketGuildUser user = Context.Guild.GetUser(userId);
+            if (user == null)
+                return;
+
+            // Now remove all other roles and add quarantined role
+            foreach (IRole role in user.Roles)
+            {
+                if (role.Name == "@everyone")
+                    continue;
+                await user.RemoveRoleAsync(role);
+            }
+            await user.AddRoleAsync(Context.Guild.GetRole(645413078405611540));
         }
     }
     

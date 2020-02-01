@@ -124,7 +124,7 @@ namespace THUMPSBot
 
         public async Task<bool> AddUser(ulong userId, string status = "New User")
         {
-            Console.WriteLine($"Adding user {_client.GetUser(userId).ToString()} ({userId}) to the database.");
+            Console.WriteLine($"Adding user {_client.Rest.GetUserAsync(userId).Result.ToString()} ({userId}) to the database.");
 
             // Ensure that a user profile has not already been created.
             List<DataRow> serverUsers = new List<DataRow>();
@@ -170,7 +170,7 @@ namespace THUMPSBot
                 long longId = Convert.ToInt64(userId);
 
                 //set the values
-                command.Parameters.AddWithValue("@Username", _client.GetUser(userId).ToString());
+                command.Parameters.AddWithValue("@Username", _client.Rest.GetUserAsync(userId).Result.ToString());
                 command.Parameters.AddWithValue("@UserId", longId);
                 command.Parameters.AddWithValue("@Status", status);
 
@@ -249,7 +249,7 @@ namespace THUMPSBot
 
         public async Task UpdateUser(ulong userId, string status)
         {
-            Console.WriteLine($"Updating user {_client.GetUser(userId).ToString()} ({userId}) from the database.");
+            Console.WriteLine($"Updating user {_client.Rest.GetUserAsync(userId).Result.ToString()} ({userId}) from the database.");
 
             string query = "UPDATE MemberServerStatus SET Username = @Username, Status = @Status WHERE UserID = @UserId";
 
@@ -262,7 +262,7 @@ namespace THUMPSBot
                 long longId = Convert.ToInt64(userId);
 
                 //set the values
-                command.Parameters.AddWithValue("@Username", _client.GetUser(userId).Username);
+                command.Parameters.AddWithValue("@Username", _client.Rest.GetUserAsync(userId).Result.Username);
                 command.Parameters.AddWithValue("@UserId", longId);
                 command.Parameters.AddWithValue("@Status", status);
 

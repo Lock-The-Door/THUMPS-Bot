@@ -124,9 +124,7 @@ namespace THUMPSBot
         [Command("Update")]
         [Summary("Rebuilds the user and status data table.")]
         public async Task Update()
-        {
-            await new User_Flow_control(Context.Client).UpdateDB();
-        }
+            => await new User_Flow_control(Context.Client).UpdateDB();
 
         Dictionary<Cacheable<IUserMessage, ulong>, ulong> confirmations = new Dictionary<Cacheable<IUserMessage, ulong>, ulong>();
 

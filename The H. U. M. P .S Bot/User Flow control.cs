@@ -245,6 +245,8 @@ namespace THUMPSBot
                         await UpdateUser(user.Id, status);
                 }
             }
+
+            Console.WriteLine("Done!");
         }
 
         public async Task UpdateUser(ulong userId, string status)

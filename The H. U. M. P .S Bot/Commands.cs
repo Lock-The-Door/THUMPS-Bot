@@ -117,7 +117,7 @@ namespace THUMPSBot
         }
     }
 
-    [Group ("DB")] //indev
+    [Group ("DB")]
     [RequireServerOwner]
     public class UserDatabase : ModuleBase<SocketCommandContext>
     {
@@ -125,8 +125,6 @@ namespace THUMPSBot
         [Summary("Rebuilds the user and status data table.")]
         public async Task Update()
             => await new User_Flow_control(Context.Client).UpdateDB();
-
-        Dictionary<Cacheable<IUserMessage, ulong>, ulong> confirmations = new Dictionary<Cacheable<IUserMessage, ulong>, ulong>();
 
         [Command("AddUser")]
         [Summary("Adds a new user to the database.")]

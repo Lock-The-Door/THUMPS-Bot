@@ -128,9 +128,39 @@ namespace THUMPSBot
 
         [Command("AddUser")]
         [Summary("Adds a new user to the database.")]
-        public async Task AddUser(SocketGuildUser user, string status = "New User")
+        public async Task AddUser(SocketGuildUser user, [Remainder] string status = "New User")
         {
             User_Flow_control userFlow = new User_Flow_control(Context.Client);
+
+            // Format the status correctly
+            status = status.ToLower();
+            bool caps = true;
+            string formattedStatus = "";
+            foreach (char c in status)
+            {
+                if (caps)
+                    formattedStatus += char.ToUpper(c);
+                else
+                    formattedStatus += c;
+
+                caps = false;
+
+                if (c == ' ')
+                    caps = true;
+            }
+
+            // Ensure it's valid
+            switch (formattedStatus)
+            {
+                case "Whitelisted":
+                case "Blacklisted":
+                case "Quarantined":
+                case "New User":
+                    break;
+                default:
+                    await ReplyAsync(status + "is not a valid status");
+                    return;
+            }
 
             await ReplyAsync($"Adding user {user.Mention} with the id of {user.Id} as {status}");
 
@@ -145,11 +175,41 @@ namespace THUMPSBot
         }
         [Command("AddUser")]
         [Summary("Adds a new user to the database.")]
-        public async Task AddUser(ulong userId, string status = "New User")
+        public async Task AddUser(ulong userId, [Remainder] string status = "New User")
         {
             User_Flow_control userFlow = new User_Flow_control(Context.Client);
 
-            await ReplyAsync($"Adding user <@!{userId}> with the id of {userId} as {status}");
+            // Format the status correctly
+            status = status.ToLower();
+            bool caps = true;
+            string formattedStatus = "";
+            foreach (char c in status)
+            {
+                if (caps)
+                    formattedStatus += char.ToUpper(c);
+                else
+                    formattedStatus += c;
+
+                caps = false;
+
+                if (c == ' ')
+                    caps = true;
+            }
+
+            // Ensure it's valid
+            switch (formattedStatus)
+            {
+                case "Whitelisted":
+                case "Blacklisted":
+                case "Quarantined":
+                case "New User":
+                    break;
+                default:
+                    await ReplyAsync(status + "is not a valid status");
+                    return;
+            }
+
+            await ReplyAsync($"Adding user <@!{userId}> with the id of {userId} as {formattedStatus}");
 
             if (await userFlow.AddUser(userId, status))
                 await ReplyAsync($"Successfully added <@!{userId}> as {status}");

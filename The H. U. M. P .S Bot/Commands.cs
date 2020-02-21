@@ -262,7 +262,7 @@ namespace THUMPSBot
             }
 
             // Remove ban if banned
-            await Context.Guild.RemoveBanAsync(await Context.Client.Rest.GetUserAsync(userId) as IUser);
+            await Context.Guild.RemoveBanAsync(userId);
 
             // Remove quarantine if quarantined
             SocketGuildUser guildUser = Context.Guild.GetUser(userId);

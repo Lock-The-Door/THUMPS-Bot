@@ -128,11 +128,11 @@ namespace THUMPSBot
 
         [Command("AddUser")]
         [Summary("Adds a new user to the database.")]
-        public async Task AddUserCommand(SocketGuildUser user, [Remainder] string status = "New User")
+        public async Task AddSocketUser(SocketGuildUser user, [Remainder] string status = "New User")
             => await AddUser(user.Id, status);
         [Command("AddUser")]
         [Summary("Adds a new user to the database.")]
-        public async Task AddUserCommand(ulong userId, [Remainder] string status = "New User")
+        public async Task AddUserId(ulong userId, [Remainder] string status = "New User")
             => await AddUser(userId, status);
         private async Task AddUser(ulong userId, string status)
         {
@@ -182,7 +182,7 @@ namespace THUMPSBot
 
         [Command("Blacklist")]
         [Summary("Blacklists a user")]
-        public async Task BlacklistUser(SocketGuildUser user, [Remainder] string reason = "")
+        public async Task BlacklistSocketUser(SocketGuildUser user, [Remainder] string reason = "")
         => await BlacklistUser(user.Id, reason);
         [Command("Blacklist")]
         [Summary("Blacklists a user")]

@@ -240,6 +240,27 @@ namespace THUMPSBot
             }
             await user.AddRoleAsync(Context.Guild.GetRole(645413078405611540));
         }
+
+        private async Task WhitelistUser(ulong userId)
+        {
+            User_Flow_control userFlow = new User_Flow_control(Context.Client);
+
+            if (await userFlow.AddUser(userId, "Whitelisted"))
+                await ReplyAsync($"Successfully added <@!{userId}> as Whitelisted");
+            else
+            {
+                await userFlow.UpdateUser(userId, "Whitelisted");
+                await ReplyAsync($"Successfully updated <@!{userId}> as Whitelisted");
+            }
+
+            // Remove ban if banned
+            await Context.Guild.RemoveBanAsync(await Context.Client.Rest.GetUserAsync(userId) as IUser);
+
+            // Remove quarantine if quarantined
+            SocketGuildUser guildUser = Context.Guild.GetUser(userId);
+            if (guildUser != null)
+                await guildUser.RemoveRoleAsync(Context.Guild.GetRole(645413078405611540));
+        }
     }
     
     public class Miscellaneous : ModuleBase<SocketCommandContext>

@@ -241,8 +241,12 @@ namespace THUMPSBot
             await user.AddRoleAsync(Context.Guild.GetRole(645413078405611540));
         }
 
+        [Command("Whitelist")]
+        [Summary("Whitelists a user")]
         public async Task WhitelistSocketUser(SocketGuildUser user)
             => await WhitelistUser(user.Id);
+        [Command("Whitelist")]
+        [Summary("Whitelists a user")]
         public async Task WhitelistUserId(ulong userId)
             => await WhitelistUser(userId);
         private async Task WhitelistUser(ulong userId)

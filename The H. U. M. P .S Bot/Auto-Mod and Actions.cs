@@ -63,7 +63,7 @@ namespace THUMPSBot
             { reason = "n-word"; }
             else if (combinedMessage.Contains("nigga") || combinedMessage.Contains("niga"))
             { reason = "n-word slang"; }
-            else if (combinedMessage.Contains("nlgger"))
+            else if (combinedMessage.Contains("nlgger") || combinedMessage.Contains("nlgga"))
             { reason = "n-word with l"; }
             else if (combinedMessage.Contains("n#gger"))
             { reason = "n-word with #"; }

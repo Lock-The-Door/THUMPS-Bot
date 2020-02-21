@@ -128,54 +128,13 @@ namespace THUMPSBot
 
         [Command("AddUser")]
         [Summary("Adds a new user to the database.")]
-        public async Task AddUser(SocketGuildUser user, [Remainder] string status = "New User")
-        {
-            User_Flow_control userFlow = new User_Flow_control(Context.Client);
-
-            // Format the status correctly
-            status = status.ToLower();
-            bool caps = true;
-            string formattedStatus = "";
-            foreach (char c in status)
-            {
-                if (caps)
-                    formattedStatus += char.ToUpper(c);
-                else
-                    formattedStatus += c;
-
-                caps = false;
-
-                if (c == ' ')
-                    caps = true;
-            }
-
-            // Ensure it's valid
-            switch (formattedStatus)
-            {
-                case "Whitelisted":
-                case "Blacklisted":
-                case "Quarantined":
-                case "New User":
-                    break;
-                default:
-                    await ReplyAsync(status + "is not a valid status");
-                    return;
-            }
-
-            await ReplyAsync($"Adding user {user.Mention} with the id of {user.Id} as {status}");
-
-            if (await userFlow.AddUser(user.Id, status))
-                await ReplyAsync($"Successfully added <@!{user.Id}> as {status}");
-            else
-            {
-                await ReplyAsync("A database entry for " + user.Mention + " already exists, updating user entry...");
-                await userFlow.UpdateUser(user.Id, status);
-                await ReplyAsync($"Successfully updated <@!{user.Id}> as {status}");
-            }
-        }
+        public async Task AddUserCommand(SocketGuildUser user, [Remainder] string status = "New User")
+            => await AddUser(user.Id, status);
         [Command("AddUser")]
         [Summary("Adds a new user to the database.")]
-        public async Task AddUser(ulong userId, [Remainder] string status = "New User")
+        public async Task AddUserCommand(ulong userId, [Remainder] string status = "New User")
+            => await AddUser(userId, status);
+        private async Task AddUser(ulong userId, string status)
         {
             User_Flow_control userFlow = new User_Flow_control(Context.Client);
 
@@ -223,26 +182,13 @@ namespace THUMPSBot
 
         [Command("Blacklist")]
         [Summary("Blacklists a user")]
-        public async Task BlacklistUser(SocketGuildUser user, [Remainder]string reason = "")
-        {
-            User_Flow_control userFlow = new User_Flow_control(Context.Client);
-
-            await Context.Guild.DownloadUsersAsync();
-
-            if (await userFlow.AddUser(user.Id, "Blacklisted"))
-                await ReplyAsync($"Successfully added <@!{user.Id}> as Blacklisted");
-            else
-            {
-                await userFlow.UpdateUser(user.Id, "Blacklisted");
-                await ReplyAsync($"Successfully updated <@!{user.Id}> as Blacklisted");
-            }
-
-            //Now ban the user
-            await Context.Guild.AddBanAsync(user, reason: reason == "" ? "Blacklisted" : reason);
-        }
+        public async Task BlacklistUser(SocketGuildUser user, [Remainder] string reason = "")
+        => await BlacklistUser(user.Id, reason);
         [Command("Blacklist")]
         [Summary("Blacklists a user")]
-        public async Task BlacklistUser(ulong userId, [Remainder]string reason = "")
+        public async Task BlacklistUserId(ulong userId, [Remainder]string reason = "")
+            => await BlacklistUser(userId, reason);
+        private async Task BlacklistUser(ulong userId, string reason)
         {
             User_Flow_control userFlow = new User_Flow_control(Context.Client);
 
@@ -263,32 +209,13 @@ namespace THUMPSBot
 
         [Command("Quarantine")]
         [Summary("Quarantines a user")]
-        public async Task QuarantineUser(SocketGuildUser user)
-        {
-            User_Flow_control userFlow = new User_Flow_control(Context.Client);
-
-            await Context.Guild.DownloadUsersAsync();
-
-            if (await userFlow.AddUser(user.Id, "Quarantined"))
-                await ReplyAsync($"Successfully added <@!{user.Id}> as Quarantined");
-            else
-            {
-                await userFlow.UpdateUser(user.Id, "Quarantined");
-                await ReplyAsync($"Successfully updated <@!{user.Id}> as Quarantined");
-            }
-
-            // Now remove all other roles and add quarantined role
-            foreach(IRole role in user.Roles)
-            {
-                if (role.Name == "@everyone")
-                    continue;
-                await user.RemoveRoleAsync(role);
-            }
-            await user.AddRoleAsync(Context.Guild.GetRole(645413078405611540));
-        }
+        public async Task QuarantineSocketUser(SocketGuildUser user)
+            => await QuarentineUser(user.Id);
         [Command("Quarantine")]
         [Summary("Quarantines a user")]
-        public async Task QuarantineUser(ulong userId)
+        public async Task QuarantineUserId(ulong userId)
+            => await QuarentineUser(userId);
+        private async Task QuarentineUser(ulong userId)
         {
             User_Flow_control userFlow = new User_Flow_control(Context.Client);
 

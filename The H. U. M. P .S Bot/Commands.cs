@@ -266,7 +266,7 @@ namespace THUMPSBot
             try
             {
                 await Context.Guild.RemoveBanAsync(userId);
-                ReplyAsync($"Unbanned <@!{userId}>");
+                await ReplyAsync($"Unbanned <@!{userId}>");
             }
             catch (Exception e)
             {

@@ -266,7 +266,7 @@ namespace THUMPSBot
             try
             {
                 await Context.Guild.RemoveBanAsync(userId);
-                ReplyAsync("Unbanned ");
+                ReplyAsync($"Unbanned <@!{userId}>");
             }
             catch (Exception e)
             {
@@ -283,6 +283,7 @@ namespace THUMPSBot
             {
                 await guildUser.RemoveRoleAsync(Context.Guild.GetRole(645413078405611540));
                 await guildUser.AddRoleAsync(Context.Guild.GetRole(665758685464625153));
+                await ReplyAsync($"Updated roles for <@!{userId}>");
             }
         }
     }

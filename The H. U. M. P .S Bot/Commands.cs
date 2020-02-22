@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using Discord.Webhook;
 using Discord.WebSocket;
@@ -242,9 +242,6 @@ namespace THUMPSBot
             await user.AddRoleAsync(Context.Guild.GetRole(645413078405611540));
         }
 
-        readonly IEmote cross = new Emoji("❎") as IEmote;
-        readonly IEmote check = new Emoji("✅") as IEmote;
-
         [Command("Whitelist")]
         [Summary("Whitelists a user")]
         public async Task WhitelistSocketUser(SocketGuildUser user)
@@ -269,12 +266,7 @@ namespace THUMPSBot
             try
             {
                 await Context.Guild.RemoveBanAsync(userId);
-                var unbanMessage = await ReplyAsync($"Unbanned <@!{userId}>");/* click :white_check_mark: to send an invite link or :negative_squared_cross_mark: to not send an invite");
-                
-                await unbanMessage.AddReactionAsync(check);
-                await unbanMessage.AddReactionAsync(cross);
-
-                Context.Client.ReactionAdded += Client_ReactionAdded;*/
+                ReplyAsync($"Unbanned <@!{userId}>");
             }
             catch (Exception e)
             {
@@ -293,11 +285,6 @@ namespace THUMPSBot
                 await guildUser.AddRoleAsync(Context.Guild.GetRole(665758685464625153));
                 await ReplyAsync($"Updated roles for <@!{userId}>");
             }
-        }
-
-        private Task Client_ReactionAdded(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
-        {
-            return Task.CompletedTask;
         }
     }
     

@@ -2,6 +2,7 @@ using Discord;
 using Discord.Commands;
 using Discord.Webhook;
 using Discord.WebSocket;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -262,12 +263,27 @@ namespace THUMPSBot
             }
 
             // Remove ban if banned
-            await Context.Guild.RemoveBanAsync(userId);
+            try
+            {
+                await Context.Guild.RemoveBanAsync(userId);
+                ReplyAsync("Unbanned ");
+            }
+            catch (Exception e)
+            {
+                if (e.HResult != -2146233088)
+                {
+                    Console.WriteLine(e.HResult);
+                    await ReplyAsync("A problem occurred while attempting to unban this user");
+                }
+            }
 
-            // Remove quarantine if quarantined
+            // Remove quarantine if quarantined and give I just returned role
             SocketGuildUser guildUser = Context.Guild.GetUser(userId);
             if (guildUser != null)
+            {
                 await guildUser.RemoveRoleAsync(Context.Guild.GetRole(645413078405611540));
+                await guildUser.AddRoleAsync(Context.Guild.GetRole(665758685464625153));
+            }
         }
     }
     

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace THUMPSBot
 {
     [Group("Tests")]
-    [RequireOwner(ErrorMessage = "This is a test command and is not intended for public use.", Group = "Permmision")]
+    [RequireOwner(ErrorMessage = "This is a test command and is not intended for public use.", Group = "Permission")]
     public class TestModule : ModuleBase<SocketCommandContext>
     {
         SaveTest save = new SaveTest();
@@ -75,7 +75,7 @@ namespace THUMPSBot
         Mod_Actions actions = new Mod_Actions();
         
         [Command("warn")]
-        [RequireUserPermission(GuildPermission.KickMembers, ErrorMessage = "You are not allowed to use this command because you are not a moderator", Group = "Permision", NotAGuildErrorMessage = "This can only be used in a guild")]
+        [RequireUserPermission(GuildPermission.KickMembers, ErrorMessage = "You are not allowed to use this command because you are not a moderator", Group = "Permission", NotAGuildErrorMessage = "This can only be used in a guild")]
         [Summary("Warns a user and logs it")]
         public async Task Warn(IGuildUser user, [Remainder] string reason = "No reason provided")
         {

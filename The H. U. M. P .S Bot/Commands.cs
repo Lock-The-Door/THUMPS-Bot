@@ -1,5 +1,8 @@
 using Discord;
 using Discord.Commands;
+using Discord.Webhook;
+using Discord.WebSocket;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -7,7 +10,7 @@ using System.Threading.Tasks;
 namespace THUMPSBot
 {
     [Group("Tests")]
-    [RequireOwner(ErrorMessage = "This is a test command and is not intended for public use.", Group = "Permmision")]
+    [RequireOwner(ErrorMessage = "This is a test command and is not intended for public use.", Group = "Permission")]
     public class TestModule : ModuleBase<SocketCommandContext>
     {
         SaveTest save = new SaveTest();
@@ -72,7 +75,7 @@ namespace THUMPSBot
         Mod_Actions actions = new Mod_Actions();
         
         [Command("warn")]
-        [RequireUserPermission(GuildPermission.KickMembers, ErrorMessage = "You are not allowed to use this command because you are not a moderator", Group = "Permision", NotAGuildErrorMessage = "This can only be used in a guild")]
+        [RequireUserPermission(GuildPermission.KickMembers, ErrorMessage = "You are not allowed to use this command because you are not a moderator", Group = "Permission", NotAGuildErrorMessage = "This can only be used in a guild")]
         [Summary("Warns a user and logs it")]
         public async Task Warn(IGuildUser user, [Remainder] string reason = "No reason provided")
         {
@@ -92,7 +95,7 @@ namespace THUMPSBot
                     Color = new Color(230, 200, 0)
                     //add more statistics in later update
                 }.Build();
-                //reply to executer
+                //reply to executor
                 await ReplyAsync(embed: warnReplyEmbed);
             }
             else
@@ -114,11 +117,181 @@ namespace THUMPSBot
                 //await Context.User.SendMessageAsync(embed: infractions);
         }
     }
+
+    [Group ("DB")]
+    [RequireServerOwner]
+    public class UserDatabase : ModuleBase<SocketCommandContext>
+    {
+        [Command("Update")]
+        [Summary("Rebuilds the user and status data table.")]
+        public async Task Update()
+            => await new User_Flow_control(Context.Client).UpdateDB();
+
+        [Command("AddUser")]
+        [Summary("Adds a new user to the database.")]
+        public async Task AddSocketUser(SocketGuildUser user, [Remainder] string status = "New User")
+            => await AddUser(user.Id, status);
+        [Command("AddUser")]
+        [Summary("Adds a new user to the database.")]
+        public async Task AddUserId(ulong userId, [Remainder] string status = "New User")
+            => await AddUser(userId, status);
+        private async Task AddUser(ulong userId, string status)
+        {
+            User_Flow_control userFlow = new User_Flow_control(Context.Client);
+
+            // Format the status correctly
+            status = status.ToLower();
+            bool caps = true;
+            string formattedStatus = "";
+            foreach (char c in status)
+            {
+                if (caps)
+                    formattedStatus += char.ToUpper(c);
+                else
+                    formattedStatus += c;
+
+                caps = false;
+
+                if (c == ' ')
+                    caps = true;
+            }
+
+            // Ensure it's valid
+            switch (formattedStatus)
+            {
+                case "Whitelisted":
+                case "Blacklisted":
+                case "Quarantined":
+                case "New User":
+                    break;
+                default:
+                    await ReplyAsync(status + "is not a valid status");
+                    return;
+            }
+
+            await ReplyAsync($"Adding user <@!{userId}> with the id of {userId} as {formattedStatus}");
+
+            if (await userFlow.AddUser(userId, status))
+                await ReplyAsync($"Successfully added <@!{userId}> as {status}");
+            else
+            {
+                await ReplyAsync("A database entry for " + Context.Client.Rest.GetUserAsync(userId).Result.Mention + " already exists, updating user entry...");
+                await userFlow.UpdateUser(userId, status);
+                await ReplyAsync($"Successfully updated <@!{userId}> as {status}");
+            }
+        }
+
+        [Command("Blacklist")]
+        [Summary("Blacklists a user")]
+        public async Task BlacklistSocketUser(SocketGuildUser user, [Remainder] string reason = "")
+        => await BlacklistUser(user.Id, reason);
+        [Command("Blacklist")]
+        [Summary("Blacklists a user")]
+        public async Task BlacklistUserId(ulong userId, [Remainder]string reason = "")
+            => await BlacklistUser(userId, reason);
+        private async Task BlacklistUser(ulong userId, string reason)
+        {
+            User_Flow_control userFlow = new User_Flow_control(Context.Client);
+
+            if (await Context.Client.Rest.GetUserAsync(userId) == null)
+                await ReplyAsync("I could not find the user you were looking for.");
+
+            if (await userFlow.AddUser(userId, "Blacklisted"))
+                await ReplyAsync($"Successfully added <@!{userId}> as Blacklisted");
+            else
+            {
+                await userFlow.UpdateUser(userId, "Blacklisted");
+                await ReplyAsync($"Successfully updated <@!{userId}> as Blacklisted");
+            }
+
+            //Now ban the user
+            await Context.Guild.AddBanAsync(Context.Client.Rest.GetUserAsync(userId).Result, reason: reason == "" ? "Blacklisted" : reason);
+        }
+
+        [Command("Quarantine")]
+        [Summary("Quarantines a user")]
+        public async Task QuarantineSocketUser(SocketGuildUser user)
+            => await QuarentineUser(user.Id);
+        [Command("Quarantine")]
+        [Summary("Quarantines a user")]
+        public async Task QuarantineUserId(ulong userId)
+            => await QuarentineUser(userId);
+        private async Task QuarentineUser(ulong userId)
+        {
+            User_Flow_control userFlow = new User_Flow_control(Context.Client);
+
+            if (await userFlow.AddUser(userId, "Quarantined"))
+                await ReplyAsync($"Successfully added <@!{userId}> as Quarantined");
+            else
+            {
+                await userFlow.UpdateUser(userId, "Quarantined");
+                await ReplyAsync($"Successfully updated <@!{userId}> as Quarantined");
+            }
+
+            SocketGuildUser user = Context.Guild.GetUser(userId);
+            if (user == null)
+                return;
+
+            // Now remove all other roles and add quarantined role
+            foreach (IRole role in user.Roles)
+            {
+                if (role.Name == "@everyone")
+                    continue;
+                await user.RemoveRoleAsync(role);
+            }
+            await user.AddRoleAsync(Context.Guild.GetRole(645413078405611540));
+        }
+
+        [Command("Whitelist")]
+        [Summary("Whitelists a user")]
+        public async Task WhitelistSocketUser(SocketGuildUser user)
+            => await WhitelistUser(user.Id);
+        [Command("Whitelist")]
+        [Summary("Whitelists a user")]
+        public async Task WhitelistUserId(ulong userId)
+            => await WhitelistUser(userId);
+        private async Task WhitelistUser(ulong userId)
+        {
+            User_Flow_control userFlow = new User_Flow_control(Context.Client);
+
+            if (await userFlow.AddUser(userId, "Whitelisted"))
+                await ReplyAsync($"Successfully added <@!{userId}> as Whitelisted");
+            else
+            {
+                await userFlow.UpdateUser(userId, "Whitelisted");
+                await ReplyAsync($"Successfully updated <@!{userId}> as Whitelisted");
+            }
+
+            // Remove ban if banned
+            try
+            {
+                await Context.Guild.RemoveBanAsync(userId);
+                await ReplyAsync($"Unbanned <@!{userId}>");
+            }
+            catch (Exception e)
+            {
+                if (e.HResult != -2146233088)
+                {
+                    Console.WriteLine(e.HResult);
+                    await ReplyAsync("A problem occurred while attempting to unban this user");
+                }
+            }
+
+            // Remove quarantine if quarantined and give I just returned role
+            SocketGuildUser guildUser = Context.Guild.GetUser(userId);
+            if (guildUser != null)
+            {
+                await guildUser.RemoveRoleAsync(Context.Guild.GetRole(645413078405611540));
+                await guildUser.AddRoleAsync(Context.Guild.GetRole(665758685464625153));
+                await ReplyAsync($"Updated roles for <@!{userId}>");
+            }
+        }
+    }
     
     public class Miscellaneous : ModuleBase<SocketCommandContext>
     {
         [Command("help")]
-        [Summary("A command to find all avalible commands to the user")]
+        [Summary("A command to find all available commands to the user")]
         public async Task Help()
         {
             EmbedBuilder embedBuilder = new EmbedBuilder();
